@@ -1,36 +1,47 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cat } from 'src/cats/interfaces/cat.interface';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CreateCatDto } from 'src/cats/dtos/create-cat.dto';
+import { UpdateCatDto } from 'src/cats/dtos/update-cat.dto';
+import { Cat } from 'src/cats/entities/cat.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class CatsService {
+  constructor(
+    @InjectRepository(Cat)
+    private readonly catRepository: Repository<Cat>,
+  ) {}
   private readonly logger = new Logger(CatsService.name);
-  private readonly cats: Cat[] = [];
 
-  create(cat: Cat) {
-    this.cats.push(cat);
+  create(cat: CreateCatDto) {
+    this.catRepository.save(cat);
   }
 
-  findOne(name: string): Cat {
-    return this.cats.find((cat) => cat.name === name);
+  findOne(id: number): Promise<Cat> {
+    return this.catRepository.findOne({
+      where: { id },
+    });
   }
 
-  findAll(): Cat[] {
-    return this.cats;
+  findAll(): Promise<Cat[]> {
+    return this.catRepository.find();
   }
 
-  update(name: string, UpdateCatDto: Cat) {
-    const index = this.cats.findIndex((cat) => cat.name === name);
-    if (index != -1) {
-      this.cats[index] = UpdateCatDto;
+  async update(id: number, UpdateCatDto: UpdateCatDto) {
+    this.logger.log(
+      `Updating cat with id ${id}` + JSON.stringify(UpdateCatDto),
+    );
+    const result = await this.catRepository.update(id, UpdateCatDto);
+    return result;
+  }
+
+  async delete(name: string) {
+    const result = await this.catRepository.delete(name);
+
+    if (result.affected === 0) {
+      this.logger.error(`Cat with name ${name} not found`);
     }
 
-    return this.cats[index];
-  }
-
-  delete(name: string) {
-    const index = this.cats.findIndex((cat) => cat.name === name);
-    if (index != -1) {
-      this.cats.splice(index, 1);
-    }
+    return result;
   }
 }

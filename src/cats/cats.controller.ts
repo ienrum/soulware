@@ -15,8 +15,7 @@ import { CatsService } from 'src/cats/cats.service';
 import { CreateCatDto } from 'src/cats/dtos/create-cat.dto';
 import { GetDocsQueryList } from 'src/cats/dtos/query-docs';
 import { UpdateCatDto } from 'src/cats/dtos/update-cat.dto';
-import { Cat } from 'src/cats/interfaces/cat.interface';
-
+import { Cat } from 'src/cats/entities/cat.entity';
 @Controller('cats')
 export class CatsController {
   constructor(private catsService: CatsService) {}
@@ -27,7 +26,7 @@ export class CatsController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateCatDto: UpdateCatDto) {
+  update(@Param('id') id: number, @Body() updateCatDto: UpdateCatDto) {
     this.catsService.update(id, updateCatDto);
   }
 
@@ -37,8 +36,8 @@ export class CatsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Cat> {
-    return this.catsService.findOne(id);
+  async findOne(@Param('id') id: number): Promise<Cat> {
+    return await this.catsService.findOne(id);
   }
 
   @Delete(':id')
