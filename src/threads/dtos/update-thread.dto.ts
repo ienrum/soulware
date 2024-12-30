@@ -1,4 +1,4 @@
-export class UpdateCatDto {
+export class UpdateThreadDto {
   name: string;
   breed: string;
 }

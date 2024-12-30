@@ -1,4 +1,4 @@
-export class CreateCatDto {
+export class CreateThreadDto {
   name: string;
   breed: string;
 }

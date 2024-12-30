@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CatsModule } from './cats/cats.module';
+import { ThreadsModule } from './threads/threads.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Cat } from 'src/cats/entities/cat.entity';
+import { Thread } from 'src/threads/entities/thread.entity';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -20,9 +20,9 @@ import { ConfigModule } from '@nestjs/config';
       database: process.env.DB_DATABASE,
       synchronize: true,
       logging: true,
-      entities: [Cat],
+      entities: [Thread],
     }),
-    CatsModule,
+    ThreadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

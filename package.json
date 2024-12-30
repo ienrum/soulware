@@ -1,11 +1,12 @@
 {
-  "name": "cats",
+  "name": "threads",
   "version": "0.0.1",
   "description": "",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "entity:rename": "node meta-utils/renameEntity.mjs",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",

@@ -1,0 +1,55 @@
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Redirect,
+  Req,
+} from '@nestjs/common';
+import { Request } from 'express';
+import { ThreadsService } from 'src/threads/threads.service';
+import { CreateThreadDto } from 'src/threads/dtos/create-thread.dto';
+import { GetDocsQueryList } from 'src/threads/dtos/query-docs';
+import { UpdateThreadDto } from 'src/threads/dtos/update-thread.dto';
+import { Thread } from 'src/threads/entities/thread.entity';
+@Controller('threads')
+export class ThreadsController {
+  constructor(private threadsService: ThreadsService) {}
+
+  @Post()
+  create(@Body() createThreadDto: CreateThreadDto) {
+    this.threadsService.create(createThreadDto);
+  }
+
+  @Put(':id')
+  update(@Param('id') id: number, @Body() updateThreadDto: UpdateThreadDto) {
+    this.threadsService.update(id, updateThreadDto);
+  }
+
+  @Get()
+  async findAll(@Req() request: Request): Promise<Thread[]> {
+    return this.threadsService.findAll();
+  }
+
+  @Get(':id')
+  async findOne(@Param('id') id: number): Promise<Thread> {
+    return await this.threadsService.findOne(id);
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    this.threadsService.delete(id);
+  }
+
+  @Get('docs')
+  @Redirect('https://docs.nest.com', 302)
+  getDocs(@Query() query: GetDocsQueryList) {
+    if (query.version && query.version == '5') {
+      return { url: `https://docs.nestjs.com/v5/?name=${query.name}` };
+    }
+  }
+}
