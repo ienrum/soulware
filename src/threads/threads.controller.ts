@@ -16,6 +16,7 @@ import { CreateThreadDto } from 'src/threads/dtos/create-thread.dto';
 import { GetDocsQueryList } from 'src/threads/dtos/query-docs';
 import { UpdateThreadDto } from 'src/threads/dtos/update-thread.dto';
 import { Thread } from 'src/threads/entities/thread.entity';
+import { ResponseThreadItemDto } from 'src/threads/dtos/thread.response.dto';
 @Controller('threads')
 export class ThreadsController {
   constructor(private threadsService: ThreadsService) {}
@@ -31,7 +32,7 @@ export class ThreadsController {
   }
 
   @Get()
-  async findAll(@Req() request: Request): Promise<Thread[]> {
+  async findAll(): Promise<ResponseThreadItemDto[]> {
     return this.threadsService.findAll();
   }
 
@@ -43,13 +44,5 @@ export class ThreadsController {
   @Delete(':id')
   delete(@Param('id') id: string) {
     this.threadsService.delete(id);
-  }
-
-  @Get('docs')
-  @Redirect('https://docs.nest.com', 302)
-  getDocs(@Query() query: GetDocsQueryList) {
-    if (query.version && query.version == '5') {
-      return { url: `https://docs.nestjs.com/v5/?name=${query.name}` };
-    }
   }
 }

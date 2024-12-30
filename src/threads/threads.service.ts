@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateThreadDto } from 'src/threads/dtos/create-thread.dto';
+import { ResponseThreadItemDto } from 'src/threads/dtos/thread.response.dto';
 import { UpdateThreadDto } from 'src/threads/dtos/update-thread.dto';
 import { Thread } from 'src/threads/entities/thread.entity';
 import { Repository } from 'typeorm';
@@ -23,8 +24,15 @@ export class ThreadsService {
     });
   }
 
-  findAll(): Promise<Thread[]> {
-    return this.threadRepository.find();
+  async findAll(): Promise<ResponseThreadItemDto[]> {
+    const threads = await this.threadRepository.find();
+
+    return threads.map((thread) => {
+      return {
+        id: thread.id,
+        title: thread.title,
+      };
+    });
   }
 
   async update(id: number, UpdateThreadDto: UpdateThreadDto) {
