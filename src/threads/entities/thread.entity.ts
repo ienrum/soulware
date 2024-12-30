@@ -7,6 +7,8 @@ export class Thread {
 
   @Column()
   title: string;
+  @Column()
+  content: string;
 
   @Column()
   author: string;
