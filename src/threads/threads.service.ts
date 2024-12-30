@@ -4,7 +4,7 @@ import { CreateThreadDto } from 'src/threads/dtos/create-thread.dto';
 import { ResponseThreadItemDto } from 'src/threads/dtos/thread.response.dto';
 import { UpdateThreadDto } from 'src/threads/dtos/update-thread.dto';
 import { Thread } from 'src/threads/entities/thread.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 
 @Injectable()
 export class ThreadsService {
@@ -24,8 +24,18 @@ export class ThreadsService {
     });
   }
 
-  async findAll(): Promise<ResponseThreadItemDto[]> {
-    const threads = await this.threadRepository.find();
+  async findAll(
+    page?: number,
+    limit?: number,
+    search?: string,
+  ): Promise<ResponseThreadItemDto[]> {
+    const allThreads = await this.threadRepository.find();
+
+    const threads = await this.threadRepository.find({
+      where: { title: Like(`%${search || ''}%`) },
+      take: limit || 10,
+      skip: (page - 1) * 10 || 0,
+    });
 
     return threads.map((thread) => {
       return {
