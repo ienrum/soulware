@@ -1,4 +1,4 @@
 export class CreateThreadDto {
-  name: string;
-  breed: string;
+  title: string;
+  author: string;
 }

@@ -1,5 +1,4 @@
 export interface Thread {
-  name: string;
-  age: number;
-  breed: string;
+  title: string;
+  author: string;
 }

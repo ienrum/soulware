@@ -1,4 +1,4 @@
 export class UpdateThreadDto {
-  name: string;
-  breed: string;
+  title: string;
+  author: string;
 }

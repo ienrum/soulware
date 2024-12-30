@@ -6,8 +6,8 @@ export class Thread {
   id: number;
 
   @Column()
-  name: string;
+  title: string;
 
-  @Column({ default: 'unknown' })
-  breed: string;
+  @Column()
+  author: string;
 }
