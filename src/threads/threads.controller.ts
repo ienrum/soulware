@@ -16,7 +16,7 @@ import { CreateThreadDto } from 'src/threads/dtos/create-thread.dto';
 import { GetDocsQueryList } from 'src/threads/dtos/query-docs';
 import { UpdateThreadDto } from 'src/threads/dtos/update-thread.dto';
 import { Thread } from 'src/threads/entities/thread.entity';
-import { ResponseThreadItemDto } from 'src/threads/dtos/thread.response.dto';
+import { ResponseThreadListDto } from 'src/threads/dtos/thread.response.dto';
 import { PaginationQuryDto } from 'src/threads/dtos/pagenation.query.dto';
 @Controller('threads')
 export class ThreadsController {
@@ -35,7 +35,7 @@ export class ThreadsController {
   @Get()
   async findAll(
     @Query() query: PaginationQuryDto,
-  ): Promise<ResponseThreadItemDto[]> {
+  ): Promise<ResponseThreadListDto> {
     return this.threadsService.findAll(query.page, query.limit, query.search);
   }
 
