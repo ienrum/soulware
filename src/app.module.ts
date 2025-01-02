@@ -5,11 +5,15 @@ import { ThreadsModule } from './threads/threads.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Thread } from 'src/threads/entities/thread.entity';
 import { ConfigModule } from '@nestjs/config';
+import { UsersModule } from './users/users.module';
+import { User } from 'src/users/entities/User.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: '.env',
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -20,9 +24,11 @@ import { ConfigModule } from '@nestjs/config';
       database: process.env.DB_DATABASE,
       synchronize: true,
       logging: true,
-      entities: [Thread],
+      entities: [Thread, User],
     }),
     ThreadsModule,
+    UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
