@@ -5,9 +5,9 @@
   - [x] cat 조회
   - [x] cat 수정
   - [x] cat 삭제
-- [ ] postgresql 연동하기
+- [x] postgresql 연동하기
 - [ ] 인증, 인가 구현하기
   - [ ] 회원가입
   - [ ] 로그인
 - [ ] 테스트 코드 작성하기
-- [ ] docker-compose로 mysql, backend, frontend 연동하기
+- [ ] docker-compose로 postgresql, backend, frontend 연동하기
