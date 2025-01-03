@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from 'src/users/entities/User.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Thread {
@@ -10,6 +11,6 @@ export class Thread {
   @Column()
   content: string;
 
-  @Column()
-  author: string;
+  @ManyToOne(() => User, (user) => user.threads)
+  authorId: number;
 }
