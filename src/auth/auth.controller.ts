@@ -5,15 +5,14 @@ import {
   Res,
   UseInterceptors,
   Get,
-  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserSignUpDto } from './dto/user-signup.dto';
 import { UserSignInDto } from 'src/auth/dto/user-signin.dto';
 import { Response } from 'express';
 import { SetTokenCookieInterceptor } from 'src/auth/interceptors/setTokenCookie.interceptor';
-import { AuthGuard } from 'src/auth/auth.guard';
 import { CheckAuthorizedInterceptor } from 'src/auth/interceptors/checkAuthenticated.interceptor';
+import { ClearJwtTokenInterceptor } from 'src/auth/interceptors/clearJwtToken.interceptor';
 
 @Controller('auth')
 export class AuthController {
@@ -31,6 +30,10 @@ export class AuthController {
 
     return { token, message: 'Sign in success' };
   }
+
+  @UseInterceptors(ClearJwtTokenInterceptor)
+  @Post('signout')
+  signOut(e) {}
 
   @UseInterceptors(CheckAuthorizedInterceptor)
   @Get('me')
