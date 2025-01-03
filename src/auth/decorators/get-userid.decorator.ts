@@ -13,6 +13,6 @@ const getPayload = (token: string) => {
 export const GetUserId = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest<Request>();
-    return getPayload(request.cookies.token).id;
+    return getPayload(request.cookies.token)?.id;
   },
 );
