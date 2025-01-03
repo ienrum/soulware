@@ -12,5 +12,5 @@ export class Thread {
   content: string;
 
   @ManyToOne(() => User, (user) => user.threads)
-  authorId: number;
+  user: User;
 }

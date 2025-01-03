@@ -12,6 +12,6 @@ export class User {
   @Column()
   password: string;
 
-  @OneToMany(() => Thread, (thread) => thread.authorId)
+  @OneToMany(() => Thread, (thread) => thread.user)
   threads: Thread[];
 }
