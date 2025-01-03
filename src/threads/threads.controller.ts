@@ -12,8 +12,10 @@ import {
 import { ThreadsService } from 'src/threads/threads.service';
 import { CreateThreadDto } from 'src/threads/dtos/create-thread.dto';
 import { UpdateThreadDto } from 'src/threads/dtos/update-thread.dto';
-import { Thread } from 'src/threads/entities/thread.entity';
-import { ResponseThreadListDto } from 'src/threads/dtos/thread.response.dto';
+import {
+  ResponseThreadDto,
+  ResponseThreadListDto,
+} from 'src/threads/dtos/thread.response.dto';
 import { PaginationQuryDto } from 'src/threads/dtos/pagenation.query.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { GetUserId } from 'src/auth/decorators/get-userid.decorator';
@@ -23,8 +25,11 @@ export class ThreadsController {
 
   @UseGuards(AuthGuard)
   @Post()
-  create(@Body() createThreadDto: CreateThreadDto) {
-    this.threadsService.create(createThreadDto);
+  create(
+    @GetUserId() userid: number,
+    @Body() createThreadDto: CreateThreadDto,
+  ) {
+    return this.threadsService.create(userid, createThreadDto);
   }
 
   @UseGuards(AuthGuard)
@@ -34,7 +39,7 @@ export class ThreadsController {
     @Body() updateThreadDto: UpdateThreadDto,
     @GetUserId() userid: number,
   ) {
-    this.threadsService.update(id, updateThreadDto, userid);
+    return this.threadsService.update(id, updateThreadDto, userid);
   }
 
   @Get()
@@ -45,8 +50,11 @@ export class ThreadsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number): Promise<Thread> {
-    return await this.threadsService.findOne(id);
+  findOne(
+    @Param('id') id: number,
+    @GetUserId() userid: number,
+  ): Promise<ResponseThreadDto> {
+    return this.threadsService.findOne(id, userid);
   }
 
   @UseGuards(AuthGuard)
