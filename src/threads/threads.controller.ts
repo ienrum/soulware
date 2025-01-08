@@ -8,17 +8,21 @@ import {
   Put,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ThreadsService } from 'src/threads/threads.service';
 import { CreateThreadDto } from 'src/threads/dtos/create-thread.dto';
 import { UpdateThreadDto } from 'src/threads/dtos/update-thread.dto';
 import {
-  ResponseThreadDto,
-  ResponseThreadListDto,
+  ThreadResponseDto,
+  ThreadListResponseDto,
 } from 'src/threads/dtos/thread.response.dto';
 import { PaginationQuryDto } from 'src/threads/dtos/pagenation.query.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { GetUserId } from 'src/auth/decorators/get-userid.decorator';
+import { TransformInterceptor } from 'src/threads/interceptors/transform.interceptor';
+
+@UseInterceptors(TransformInterceptor)
 @Controller('threads')
 export class ThreadsController {
   constructor(private threadsService: ThreadsService) {}
@@ -45,7 +49,7 @@ export class ThreadsController {
   @Get()
   async findAll(
     @Query() query: PaginationQuryDto,
-  ): Promise<ResponseThreadListDto> {
+  ): Promise<ThreadListResponseDto> {
     return this.threadsService.findAll(query.page, query.limit, query.search);
   }
 
@@ -53,7 +57,7 @@ export class ThreadsController {
   findOne(
     @Param('id') id: number,
     @GetUserId() userid: number,
-  ): Promise<ResponseThreadDto> {
+  ): Promise<ThreadResponseDto> {
     return this.threadsService.findOne(id, userid);
   }
 
