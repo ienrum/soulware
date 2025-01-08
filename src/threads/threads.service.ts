@@ -7,9 +7,9 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateThreadDto } from 'src/threads/dtos/create-thread.dto';
 import {
-  ResponseThreadDto,
-  ResponseThreadItemDto,
-  ResponseThreadListDto,
+  ThreadResponseDto,
+  ThreadItem,
+  ThreadListResponseDto,
 } from 'src/threads/dtos/thread.response.dto';
 import { UpdateThreadDto } from 'src/threads/dtos/update-thread.dto';
 import { Thread } from 'src/threads/entities/thread.entity';
@@ -40,7 +40,7 @@ export class ThreadsService {
     return await this.threadRepository.save(thread);
   }
 
-  async findOne(id: number, authorid): Promise<ResponseThreadDto> {
+  async findOne(id: number, authorid): Promise<ThreadResponseDto> {
     const thread = await this.threadRepository.findOne({
       where: { id },
       relations: ['user'],
@@ -56,7 +56,7 @@ export class ThreadsService {
       name: author.name,
     };
 
-    const responsneDto: ResponseThreadDto = {
+    const responsneDto: ThreadResponseDto = {
       id: thread.id,
       title: thread.title,
       content: thread.content,
@@ -71,7 +71,7 @@ export class ThreadsService {
     page?: number,
     limit?: number,
     search?: string,
-  ): Promise<ResponseThreadListDto> {
+  ): Promise<ThreadListResponseDto> {
     const totalThreadsCount = await this.threadRepository.count();
 
     const threads = await this.threadRepository.find({
@@ -80,7 +80,7 @@ export class ThreadsService {
       skip: (page - 1) * this.MAX_LIMIT || 0,
     });
 
-    const threadItemList: ResponseThreadItemDto[] = threads.map((thread) => {
+    const threadItemList: ThreadItem[] = threads.map((thread) => {
       return {
         id: thread.id,
         title: thread.title,

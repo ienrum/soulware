@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
 
-export class ResponseThreadItemDto {
+export class ThreadItem {
   @Expose()
   id: number;
 
@@ -8,14 +8,14 @@ export class ResponseThreadItemDto {
   title: string;
 }
 
-export class ResponseThreadListDto {
+export class ThreadListResponseDto {
   @Expose()
-  data: ResponseThreadItemDto[];
+  data: ThreadItem[];
   @Expose()
   totalPage: number;
 }
 
-export class ResponseThreadDto {
+export class ThreadResponseDto {
   @Expose()
   id: number;
   @Expose()
