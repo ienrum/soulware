@@ -1,12 +1,19 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateThreadDto } from 'src/threads/dtos/create-thread.dto';
 import {
+  ResponseThreadDto,
   ResponseThreadItemDto,
   ResponseThreadListDto,
 } from 'src/threads/dtos/thread.response.dto';
 import { UpdateThreadDto } from 'src/threads/dtos/update-thread.dto';
 import { Thread } from 'src/threads/entities/thread.entity';
+import { UsersService } from 'src/users/users.service';
 import { Like, Repository } from 'typeorm';
 
 @Injectable()
@@ -14,18 +21,50 @@ export class ThreadsService {
   constructor(
     @InjectRepository(Thread)
     private readonly threadRepository: Repository<Thread>,
+    private readonly usersService: UsersService,
   ) {}
   private readonly logger = new Logger(ThreadsService.name);
   private readonly MAX_LIMIT = 4;
 
-  create(thread: CreateThreadDto) {
-    this.threadRepository.save(thread);
+  async create(userid: number, createThreadDto: CreateThreadDto) {
+    const user = await this.usersService.findOne(userid);
+    if (!user) {
+      throw new NotFoundException(`User with id ${userid} not found`);
+    }
+
+    const thread = new Thread();
+    thread.title = createThreadDto.title;
+    thread.content = createThreadDto.content;
+    thread.user = user;
+
+    return await this.threadRepository.save(thread);
   }
 
-  findOne(id: number): Promise<Thread> {
-    return this.threadRepository.findOne({
+  async findOne(id: number, authorid): Promise<ResponseThreadDto> {
+    const thread = await this.threadRepository.findOne({
       where: { id },
+      relations: ['user'],
     });
+
+    if (!thread) {
+      throw new NotFoundException(`Thread with id ${id} not found`);
+    }
+
+    const author = await this.usersService.findOne(thread.user.id);
+    const authorResponse = {
+      id: author.id,
+      name: author.name,
+    };
+
+    const responsneDto: ResponseThreadDto = {
+      id: thread.id,
+      title: thread.title,
+      content: thread.content,
+      author: authorResponse,
+      isMyThread: thread.user.id === authorid,
+    };
+
+    return responsneDto;
   }
 
   async findAll(
@@ -54,19 +93,41 @@ export class ThreadsService {
     };
   }
 
-  async update(id: number, UpdateThreadDto: UpdateThreadDto) {
-    this.logger.log(
-      `Updating thread with id ${id}` + JSON.stringify(UpdateThreadDto),
-    );
-    const result = await this.threadRepository.update(id, UpdateThreadDto);
-    return result;
+  async update(id: number, UpdateThreadDto: UpdateThreadDto, authorId: number) {
+    const thread = await this.threadRepository.findOne({
+      where: { id },
+      relations: ['user'],
+    });
+
+    if (!thread) {
+      throw new NotFoundException(`Thread with id ${id} not found`);
+    }
+
+    if (thread.user.id !== authorId) {
+      throw new HttpException('You are not allowed to update this thread', 403);
+    }
+
+    return await this.threadRepository.update(id, UpdateThreadDto);
   }
 
-  async delete(name: string) {
-    const result = await this.threadRepository.delete(name);
+  async delete(id: number, authorId: number) {
+    const thread = await this.threadRepository.findOne({
+      where: { id },
+      relations: ['user'],
+    });
+
+    if (!thread) {
+      throw new NotFoundException(`Thread with id ${id} not found`);
+    }
+
+    if (thread.user.id !== authorId) {
+      throw new HttpException('You are not allowed to delete this thread', 403);
+    }
+
+    const result = await this.threadRepository.delete(id);
 
     if (result.affected === 0) {
-      this.logger.error(`Thread with name ${name} not found`);
+      this.logger.error(`Thread with id ${id} not found`);
     }
 
     return result;
