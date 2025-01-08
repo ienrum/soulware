@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   HttpException,
   Injectable,
   Logger,
@@ -104,7 +105,7 @@ export class ThreadsService {
     }
 
     if (thread.user.id !== authorId) {
-      throw new HttpException('You are not allowed to update this thread', 403);
+      throw new ForbiddenException('You are not allowed to update this thread');
     }
 
     return await this.threadRepository.update(id, UpdateThreadDto);
@@ -121,7 +122,7 @@ export class ThreadsService {
     }
 
     if (thread.user.id !== authorId) {
-      throw new HttpException('You are not allowed to delete this thread', 403);
+      throw new ForbiddenException('You are not allowed to delete this thread');
     }
 
     const result = await this.threadRepository.delete(id);

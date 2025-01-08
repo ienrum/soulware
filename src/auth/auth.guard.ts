@@ -8,7 +8,7 @@ export class AuthGuard implements CanActivate {
     const token = this.extracFromCookie(request);
 
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Please login to continue');
     }
 
     try {
@@ -16,7 +16,7 @@ export class AuthGuard implements CanActivate {
 
       request.user = payload;
     } catch (error) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Please login to continue');
     }
 
     return true;
