@@ -1,16 +1,46 @@
 import { User } from 'src/users/entities/User.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Comment } from 'src/comments/entities/comment.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Thread {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ length: 20, nullable: true })
   title: string;
-  @Column()
+
+  @Column({ length: 255, nullable: true })
   content: string;
 
-  @ManyToOne(() => User, (user) => user.threads)
+  @Column({ name: 'view_count', default: 0 })
+  viewCount: number;
+
+  @CreateDateColumn({
+    name: 'created_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  createdAt: Date;
+
+  @UpdateDateColumn({
+    name: 'updated_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  updatedAt: Date;
+
+  @ManyToOne(() => User, (user) => user.threads, { eager: true })
   user: User;
+
+  @OneToMany(() => Comment, (comment) => comment.thread, { lazy: true })
+  comments: Comment[];
 }
