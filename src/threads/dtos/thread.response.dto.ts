@@ -10,6 +10,8 @@ class Author extends User {
   threads: Thread[];
   @Exclude()
   comments: Comment[];
+  @Exclude()
+  createdAt: Date;
 }
 
 export class ThreadResponseDto {
@@ -19,15 +21,27 @@ export class ThreadResponseDto {
   isAuthor: boolean;
 
   @Type(() => Author)
-  user: Author;
-
+  author: Author;
   constructor(data: Thread, myId: number) {
+    this.author = data.user;
     this.isAuthor = data.user.id === myId;
     Object.assign(this, data);
   }
+
+  @Exclude()
+  user: User;
 }
 
 export class ThreadItem extends Thread {
+  @Type(() => Author)
+  author: Author;
+
+  constructor(data: Thread) {
+    super();
+    this.author = data.user;
+    Object.assign(this, data);
+  }
+
   @Exclude()
   user: User;
   @Exclude()
@@ -39,7 +53,7 @@ export class ThreadListResponseDto {
   threads: ThreadItem[];
   totalPage: number;
   constructor(data: Thread[], totalPage: number) {
-    this.threads = data;
+    this.threads = data.map((thread) => new ThreadItem(thread));
     this.totalPage = totalPage;
   }
 }
