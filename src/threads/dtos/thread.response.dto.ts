@@ -16,9 +16,7 @@ class Author extends User {
 
 export class ThreadResponseDto {
   id: number;
-  @Expose()
   title: string;
-  @Expose()
   content: string;
   isAuthor: boolean;
 
