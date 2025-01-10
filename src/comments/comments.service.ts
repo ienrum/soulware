@@ -25,6 +25,7 @@ export class CommentsService {
   async findAllForThread(threadId: number) {
     const comments = await this.commentsRepository.find({
       where: { thread: { id: threadId } },
+      order: { createdAt: 'DESC' },
     });
 
     return comments;

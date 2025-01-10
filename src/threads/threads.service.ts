@@ -66,6 +66,7 @@ export class ThreadsService {
       where: { title: Like(`%${search || ''}%`) },
       take: limit || this.MAX_LIMIT,
       skip: (page - 1) * this.MAX_LIMIT || 0,
+      order: { createdAt: 'DESC' },
     });
 
     const totalPage = Math.ceil(totalThreadsCount / (limit || this.MAX_LIMIT));
