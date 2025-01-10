@@ -27,11 +27,6 @@ export class CommentsService {
       where: { thread: { id: threadId } },
     });
 
-    if (!comments) {
-      throw new NotFoundException(
-        `Comments for thread with id ${threadId} not found`,
-      );
-    }
     return comments;
   }
 
