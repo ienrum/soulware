@@ -27,17 +27,23 @@ export class CommentsController {
   constructor(private commentsService: CommentsService) {}
 
   @Get()
-  async findAllForThread(@Param('threadId') threadId: number) {
+  async findAllForThread(
+    @Param('threadId') threadId: number,
+    @GetUserId() userId: number,
+  ) {
     const comments = await this.commentsService.findAllForThread(threadId);
 
-    return new CommentListResponseDto(comments);
+    return new CommentListResponseDto(comments, userId);
   }
 
   @Get(':commentId')
-  async findOne(@Param('commentId') commentId: number) {
+  async findOne(
+    @Param('commentId') commentId: number,
+    @GetUserId() userId: number,
+  ) {
     const comment = await this.commentsService.findOne(commentId);
 
-    return new CommentResponseDto(comment);
+    return new CommentResponseDto(comment, userId);
   }
 
   @UseGuards(AuthGuard)

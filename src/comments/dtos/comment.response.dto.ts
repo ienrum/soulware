@@ -19,12 +19,15 @@ export class CommentResponseDto {
   content: string;
   createdAt: Date;
   updatedAt: Date;
+  isAuthor: boolean;
+
   @Expose()
   get threadId(): number {
     return this.thread.id;
   }
 
-  constructor(comment: Comment) {
+  constructor(comment: Comment, myId: number) {
+    this.isAuthor = comment.user.id === myId;
     Object.assign(this, comment);
   }
 
@@ -36,8 +39,10 @@ export class CommentResponseDto {
 }
 
 export class CommentListResponseDto {
-  constructor(comments: Comment[]) {
-    this.comments = comments.map((comment) => new CommentResponseDto(comment));
+  constructor(comments: Comment[], myId: number) {
+    this.comments = comments.map(
+      (comment) => new CommentResponseDto(comment, myId),
+    );
   }
   @Type(() => CommentResponseDto)
   comments: CommentResponseDto[];
