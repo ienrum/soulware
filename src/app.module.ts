@@ -9,6 +9,8 @@ import { UsersModule } from './users/users.module';
 import { User } from 'src/users/entities/User.entity';
 import { AuthModule } from './auth/auth.module';
 import { APP_PIPE } from '@nestjs/core';
+import { CommentsModule } from './comments/comments.module';
+import { Comment } from 'src/comments/entities/comment.entity';
 
 @Module({
   imports: [
@@ -25,11 +27,12 @@ import { APP_PIPE } from '@nestjs/core';
       database: process.env.DB_DATABASE,
       synchronize: true,
       logging: true,
-      entities: [Thread, User],
+      entities: [Thread, User, Comment],
     }),
     ThreadsModule,
     UsersModule,
     AuthModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [
