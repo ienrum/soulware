@@ -32,9 +32,15 @@ export class Comment {
   })
   updatedAt: Date;
 
-  @ManyToOne(() => User, (user) => user.comments, { eager: true })
+  @ManyToOne(() => User, (user) => user.comments, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   user: User;
 
-  @ManyToOne(() => Thread, (thread) => thread.comments, { eager: true })
+  @ManyToOne(() => Thread, (thread) => thread.comments, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   thread: Thread;
 }
