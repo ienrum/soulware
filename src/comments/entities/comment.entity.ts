@@ -39,7 +39,7 @@ export class Comment {
   user: User;
 
   @ManyToOne(() => Thread, (thread) => thread.comments, {
-    eager: true,
+    lazy: true,
     onDelete: 'CASCADE',
   })
   thread: Thread;
