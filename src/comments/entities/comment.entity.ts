@@ -1,28 +1,21 @@
+import { Thread } from 'src/threads/entities/thread.entity';
 import { User } from 'src/users/entities/User.entity';
-import { Comment } from 'src/comments/entities/comment.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
-export class Thread {
+export class Comment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 20, nullable: true })
-  title: string;
-
-  @Column({ length: 255, nullable: true })
+  @Column({ type: 'text' })
   content: string;
-
-  @Column({ name: 'view_count', default: 0 })
-  viewCount: number;
 
   @CreateDateColumn({
     name: 'created_at',
@@ -35,12 +28,19 @@ export class Thread {
     name: 'updated_at',
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
   })
   updatedAt: Date;
 
-  @ManyToOne(() => User, (user) => user.threads, { eager: true })
+  @ManyToOne(() => User, (user) => user.comments, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   user: User;
 
-  @OneToMany(() => Comment, (comment) => comment.thread, { lazy: true })
-  comments: Comment[];
+  @ManyToOne(() => Thread, (thread) => thread.comments, {
+    lazy: true,
+    onDelete: 'CASCADE',
+  })
+  thread: Thread;
 }

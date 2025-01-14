@@ -1,4 +1,10 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  HttpException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserSignUpDto } from './dto/user-signup.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/User.entity';
@@ -25,7 +31,7 @@ export class AuthService {
         password: hashedPassword,
       });
     } catch (error) {
-      throw new HttpException('User already exists', 400);
+      throw new ConflictException('User already exists');
     }
 
     return { message: 'User created successfully' };
@@ -36,12 +42,12 @@ export class AuthService {
 
     const user = await this.usersRepository.findOne({ where: { name } });
     if (!user) {
-      throw new HttpException('User not found', 404);
+      throw new NotFoundException('User not found');
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
-      throw new HttpException('Invalid credentials', 401);
+      throw new ForbiddenException('Invalid credentials');
     }
 
     const secret = this.configService.get<string>('SECRET');

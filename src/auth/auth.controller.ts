@@ -9,7 +9,6 @@ import {
 import { AuthService } from './auth.service';
 import { UserSignUpDto } from './dto/user-signup.dto';
 import { UserSignInDto } from 'src/auth/dto/user-signin.dto';
-import { Response } from 'express';
 import { SetTokenCookieInterceptor } from 'src/auth/interceptors/setTokenCookie.interceptor';
 import { CheckAuthorizedInterceptor } from 'src/auth/interceptors/checkAuthenticated.interceptor';
 import { ClearJwtTokenInterceptor } from 'src/auth/interceptors/clearJwtToken.interceptor';

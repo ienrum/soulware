@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, ValidationPipe } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ThreadsModule } from './threads/threads.module';
@@ -8,6 +8,9 @@ import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { User } from 'src/users/entities/User.entity';
 import { AuthModule } from './auth/auth.module';
+import { APP_PIPE } from '@nestjs/core';
+import { CommentsModule } from './comments/comments.module';
+import { Comment } from 'src/comments/entities/comment.entity';
 
 @Module({
   imports: [
@@ -24,13 +27,20 @@ import { AuthModule } from './auth/auth.module';
       database: process.env.DB_DATABASE,
       synchronize: true,
       logging: true,
-      entities: [Thread, User],
+      entities: [Thread, User, Comment],
     }),
     ThreadsModule,
     UsersModule,
     AuthModule,
+    CommentsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_PIPE,
+      useClass: ValidationPipe,
+    },
+  ],
 })
 export class AppModule {}
