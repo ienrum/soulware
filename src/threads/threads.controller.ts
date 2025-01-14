@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -20,9 +21,8 @@ import {
 import { PaginationQuryDto } from 'src/threads/dtos/pagenation.query.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { GetUserId } from 'src/auth/decorators/get-userid.decorator';
-import { TransformInterceptor } from 'src/threads/interceptors/transform.interceptor';
 
-@UseInterceptors(TransformInterceptor)
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('threads')
 export class ThreadsController {
   constructor(private threadsService: ThreadsService) {}

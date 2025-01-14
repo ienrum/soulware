@@ -1,7 +1,7 @@
 import {
   ForbiddenException,
-  HttpException,
   Injectable,
+  InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
@@ -38,66 +38,45 @@ export class ThreadsService {
     thread.content = createThreadDto.content;
     thread.user = user;
 
-    return await this.threadRepository.save(thread);
+    const result = await this.threadRepository.save(thread);
+
+    if (!result) {
+      throw new InternalServerErrorException('Failed to create thread');
+    }
+
+    return 'Thread created successfully';
   }
 
-  async findOne(id: number, authorid): Promise<ThreadResponseDto> {
+  async findOne(id: number, authorid: number) {
     const thread = await this.threadRepository.findOne({
       where: { id },
-      relations: ['user'],
     });
 
     if (!thread) {
       throw new NotFoundException(`Thread with id ${id} not found`);
     }
 
-    const author = await this.usersService.findOne(thread.user.id);
-    const authorResponse = {
-      id: author.id,
-      name: author.name,
-    };
-
-    const responsneDto: ThreadResponseDto = {
-      id: thread.id,
-      title: thread.title,
-      content: thread.content,
-      author: authorResponse,
-      isMyThread: thread.user.id === authorid,
-    };
-
-    return responsneDto;
+    return new ThreadResponseDto(thread, authorid);
   }
 
-  async findAll(
-    page?: number,
-    limit?: number,
-    search?: string,
-  ): Promise<ThreadListResponseDto> {
+  async findAll(page?: number, limit?: number, search?: string) {
     const totalThreadsCount = await this.threadRepository.count();
 
     const threads = await this.threadRepository.find({
       where: { title: Like(`%${search || ''}%`) },
       take: limit || this.MAX_LIMIT,
       skip: (page - 1) * this.MAX_LIMIT || 0,
+      order: { createdAt: 'DESC' },
     });
 
-    const threadItemList: ThreadItem[] = threads.map((thread) => {
-      return {
-        id: thread.id,
-        title: thread.title,
-      };
-    });
+    const totalPage = Math.ceil(totalThreadsCount / (limit || this.MAX_LIMIT));
 
-    return {
-      data: threadItemList,
-      totalPage: Math.ceil(totalThreadsCount / (limit || this.MAX_LIMIT)),
-    };
+    return new ThreadListResponseDto(threads, totalPage);
   }
 
   async update(id: number, UpdateThreadDto: UpdateThreadDto, authorId: number) {
     const thread = await this.threadRepository.findOne({
       where: { id },
-      relations: ['user'],
     });
 
     if (!thread) {
@@ -114,7 +93,6 @@ export class ThreadsService {
   async delete(id: number, authorId: number) {
     const thread = await this.threadRepository.findOne({
       where: { id },
-      relations: ['user'],
     });
 
     if (!thread) {
@@ -128,7 +106,7 @@ export class ThreadsService {
     const result = await this.threadRepository.delete(id);
 
     if (result.affected === 0) {
-      this.logger.error(`Thread with id ${id} not found`);
+      throw new InternalServerErrorException('Failed to delete thread');
     }
 
     return result;
