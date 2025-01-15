@@ -42,5 +42,5 @@ export class Comment {
     lazy: true,
     onDelete: 'CASCADE',
   })
-  thread: Thread;
+  thread: Promise<Thread>;
 }

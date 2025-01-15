@@ -64,7 +64,7 @@ export class CommentsService {
     const comment = new Comment();
     comment.content = createCommentDto.content;
     comment.user = user;
-    comment.thread = thread;
+    comment.thread = Promise.resolve(thread);
 
     const result = this.commentsRepository.save(comment);
 

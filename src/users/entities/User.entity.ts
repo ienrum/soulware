@@ -26,8 +26,8 @@ export class User {
   createdAt: Date;
 
   @OneToMany(() => Thread, (thread) => thread.user, { lazy: true })
-  threads: Thread[];
+  threads: Promise<Thread[]>;
 
   @OneToMany(() => Comment, (comment) => comment.user, { lazy: true })
-  comments: Comment[];
+  comments: Promise<Comment[]>;
 }
