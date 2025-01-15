@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -19,10 +18,7 @@ export class FileService {
     @InjectRepository(File) private fileRepository: Repository<File>,
     @InjectRepository(Thread) private threadRepository: Repository<Thread>,
   ) {}
-  private readonly logger: Logger = new Logger('FileService');
   async uploadFiles(files: Array<Express.Multer.File>, threadId: number) {
-    this.logger.log(JSON.stringify(files));
-
     if (!files) {
       throw new BadRequestException('No file uploaded');
     }

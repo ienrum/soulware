@@ -2,14 +2,12 @@ import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateThreadDto } from 'src/threads/dtos/create-thread.dto';
 import {
   ThreadResponseDto,
-  ThreadItem,
   ThreadListResponseDto,
 } from 'src/threads/dtos/thread.response.dto';
 import { UpdateThreadDto } from 'src/threads/dtos/update-thread.dto';
@@ -24,7 +22,6 @@ export class ThreadsService {
     private readonly threadRepository: Repository<Thread>,
     private readonly usersService: UsersService,
   ) {}
-  private readonly logger = new Logger(ThreadsService.name);
   private readonly MAX_LIMIT = 4;
 
   async create(userid: number, createThreadDto: CreateThreadDto) {
