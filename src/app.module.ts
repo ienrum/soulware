@@ -11,6 +11,9 @@ import { AuthModule } from './auth/auth.module';
 import { APP_PIPE } from '@nestjs/core';
 import { CommentsModule } from './comments/comments.module';
 import { Comment } from 'src/comments/entities/comment.entity';
+import { FileController } from './file/file.controller';
+import { FileModule } from './file/file.module';
+import { File } from 'src/file/entities/file.entity';
 
 @Module({
   imports: [
@@ -27,12 +30,13 @@ import { Comment } from 'src/comments/entities/comment.entity';
       database: process.env.DB_DATABASE,
       synchronize: true,
       logging: true,
-      entities: [Thread, User, Comment],
+      entities: [Thread, User, Comment, File],
     }),
     ThreadsModule,
     UsersModule,
     AuthModule,
     CommentsModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [
