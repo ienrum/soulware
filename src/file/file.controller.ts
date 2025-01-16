@@ -32,6 +32,9 @@ export class FileController {
       storage: diskStorage({
         destination: './files',
         filename: (req, file, callback) => {
+          file.originalname = Buffer.from(file.originalname, 'latin1').toString(
+            'utf8',
+          );
           const filename = `${Date.now()}-${file.originalname}`;
           callback(null, filename);
         },
@@ -43,7 +46,7 @@ export class FileController {
     @Param('threadId') threadId: number,
     @GetUserId() userId: number,
   ) {
-    return this.fileService.uploadFiles(files, threadId);
+    return this.fileService.uploadFiles(files, threadId, userId);
   }
 
   @Get(':threadId')
@@ -57,12 +60,9 @@ export class FileController {
     return new FileListResponseDto(fileList, userId);
   }
 
-  @Get('download/:filename')
-  async downloadFile(
-    @Param('filename') filename: string,
-    @Res() response: Response,
-  ) {
-    const file = await this.fileService.downloadFile(filename);
+  @Get('download/:id')
+  async downloadFile(@Param('id') id: number, @Res() response: Response) {
+    const file = await this.fileService.downloadFile(id);
 
     return response.download(file.path, file.name);
   }

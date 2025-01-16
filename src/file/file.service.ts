@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 import { File } from './entities/file.entity';
 import { Thread } from 'src/threads/entities/thread.entity';
@@ -18,7 +18,11 @@ export class FileService {
     @InjectRepository(File) private fileRepository: Repository<File>,
     @InjectRepository(Thread) private threadRepository: Repository<Thread>,
   ) {}
-  async uploadFiles(files: Array<Express.Multer.File>, threadId: number) {
+  async uploadFiles(
+    files: Array<Express.Multer.File>,
+    threadId: number,
+    userId: number,
+  ) {
     if (!files) {
       throw new BadRequestException('No file uploaded');
     }
@@ -31,16 +35,21 @@ export class FileService {
     if (!thread) {
       throw new NotFoundException('Thread not found');
     }
+
+    if (thread.user.id !== userId) {
+      throw new BadRequestException('You are not the owner of this thread');
+    }
+
     const threadFiles = await thread.files;
 
     for (const file of files) {
-      const newFile = this.fileRepository.create({
-        name: file.filename,
-        path: file.path,
-        size: file.size,
-        url: `http://localhost:3000/file/download/${file.filename}`,
-      });
+      const newFile = new File();
+      newFile.name = file.filename;
+      newFile.originalName = file.originalname;
+      newFile.path = file.path;
+      newFile.size = file.size;
       newFile.threadId = threadId;
+      newFile.userId = userId;
 
       const savedFile = await this.fileRepository.save(newFile);
 
@@ -72,10 +81,10 @@ export class FileService {
     return files;
   }
 
-  async downloadFile(filename: string) {
+  async downloadFile(id: number) {
     const file = await this.fileRepository.findOne({
       where: {
-        name: filename,
+        id,
       },
     });
 
