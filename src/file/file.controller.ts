@@ -1,5 +1,6 @@
 import {
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -48,5 +49,17 @@ export class FileController {
     const file = await this.fileService.downloadFile(filename);
 
     return response.download(file.path, file.name);
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete(':id')
+  deleteFile(@Param('id') id: number) {
+    return this.fileService.deleteFile(id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('delete')
+  deleteFiles(@Body('ids') ids: number[]) {
+    return this.fileService.deleteFiles(ids);
   }
 }
