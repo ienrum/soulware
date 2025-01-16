@@ -1,5 +1,6 @@
 import { Thread } from 'src/threads/entities/thread.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from '../../users/entities/User.entity';
 
 @Entity()
 export class File {
@@ -10,9 +11,10 @@ export class File {
   name: string;
 
   @Column({ length: 255 })
-  path: string;
+  originalName: string;
+
   @Column({ length: 255 })
-  url: string;
+  path: string;
 
   @Column()
   size: number;
@@ -27,6 +29,17 @@ export class File {
   @Column({ nullable: true })
   threadId: number;
 
-  @ManyToOne(() => Thread, (thread) => thread.files)
+  @ManyToOne(() => Thread, (thread) => thread.files, {
+    onDelete: 'CASCADE',
+  })
   thread: Thread;
+
+  @Column()
+  userId: number;
+
+  @ManyToOne(() => User, (user) => user.files, {
+    onDelete: 'CASCADE',
+    lazy: true,
+  })
+  user: Promise<User>;
 }
