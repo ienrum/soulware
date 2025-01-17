@@ -19,6 +19,8 @@ import { GetUserId } from 'src/auth/decorators/get-userid.decorator';
 import { FileListResponseDto } from 'src/file/dtos/file.response';
 import { FileService } from 'src/file/file.service';
 
+import { v4 } from 'uuid';
+
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('file')
 export class FileController {
@@ -34,7 +36,7 @@ export class FileController {
           file.originalname = Buffer.from(file.originalname, 'latin1').toString(
             'utf8',
           );
-          const filename = `${Date.now()}-${file.originalname}`;
+          const filename = `${v4()}-${file.originalname}`;
           callback(null, filename);
         },
       }),
