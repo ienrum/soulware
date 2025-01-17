@@ -2,7 +2,6 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
-  Delete,
   Get,
   Param,
   Post,
@@ -70,12 +69,6 @@ export class FileController {
     const file = await this.fileService.downloadFile(id);
 
     return response.download(file.path, file.name);
-  }
-
-  @UseGuards(AuthGuard)
-  @Delete(':id')
-  deleteFile(@Param('id') id: number) {
-    return this.fileService.deleteFile(id);
   }
 
   @UseGuards(AuthGuard)

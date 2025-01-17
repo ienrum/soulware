@@ -98,32 +98,6 @@ export class FileService {
     return file;
   }
 
-  async deleteFile(id: number) {
-    const file = await this.fileRepository.findOne({
-      where: {
-        id,
-      },
-    });
-
-    if (!file) {
-      throw new NotFoundException('File not found');
-    }
-
-    if (!fs.existsSync(file.path)) {
-      throw new NotFoundException('File not exist');
-    }
-
-    fs.unlinkSync(file.path);
-
-    const ok = await this.fileRepository.delete(file.id);
-
-    if (!ok) {
-      throw new InternalServerErrorException('Failed to delete file');
-    }
-
-    return 'File deleted successfully';
-  }
-
   async deleteFiles(ids: number[]) {
     if (ids.length === 0) {
       throw new BadRequestException('ids are empty');
@@ -137,6 +111,30 @@ export class FileService {
 
     if (!files) {
       throw new NotFoundException('File not found');
+    }
+
+    const deletedFiles: File[] = [];
+
+    for (const file of files) {
+      fs.unlinkSync(file.path);
+
+      if (fs.existsSync(file.path)) {
+        break;
+      }
+
+      deletedFiles.push(file);
+    }
+
+    if (deletedFiles.length !== ids.length) {
+      const deletedFilesId = deletedFiles.map((file) => file.id);
+      const deletedFilesName = deletedFiles.map((file) => file.originalName);
+      await this.fileRepository.delete({
+        id: In(deletedFilesId),
+      });
+
+      throw new InternalServerErrorException(
+        `Success to delete only ${deletedFilesName.join(', ')} files`,
+      );
     }
 
     const result = await this.fileRepository.delete({
