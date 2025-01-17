@@ -108,4 +108,12 @@ export class ThreadsService {
 
     return result;
   }
+
+  async isAuthor(threadId: number, userId: number) {
+    const thread = await this.threadRepository.findOne({
+      where: { id: threadId },
+    });
+
+    return thread.user.id === userId;
+  }
 }
