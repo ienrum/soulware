@@ -19,11 +19,15 @@ import { FileListResponseDto } from 'src/file/dtos/file.response';
 import { FileService } from 'src/file/file.service';
 
 import { v4 } from 'uuid';
+import { ThreadsService } from '../threads/threads.service';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('file')
 export class FileController {
-  constructor(private readonly fileService: FileService) {}
+  constructor(
+    private readonly fileService: FileService,
+    private readonly threadsService: ThreadsService,
+  ) {}
 
   @UseGuards(AuthGuard)
   @Post('upload/:threadId')
@@ -60,8 +64,9 @@ export class FileController {
     @GetUserId() userId: number,
   ) {
     const fileList = await this.fileService.getFiles(threadId);
+    const isAuthor = await this.threadsService.isAuthor(threadId, userId);
 
-    return new FileListResponseDto(fileList, userId);
+    return new FileListResponseDto(fileList, isAuthor);
   }
 
   @Get('download/:id')

@@ -7,7 +7,6 @@ class FileResponseDto extends File {
   id: number;
   name: string;
   originalName: string;
-  isAuthor: boolean;
 
   @Expose()
   url: string;
@@ -20,18 +19,17 @@ class FileResponseDto extends File {
   @Exclude()
   userId: number;
 
-  constructor(file: File, userId: number) {
+  constructor(file: File) {
     super();
     Object.assign(this, file);
-    this.isAuthor = this.userId === userId;
     this.url = `${process.env.APP_URL}/file/download/${file.id}`;
   }
 }
 
 export class FileListResponseDto {
-  constructor(files: File[], userId: number) {
-    this.files = files.map((file) => new FileResponseDto(file, userId));
-    this.isAuthor = this.files.every((file) => file.isAuthor);
+  constructor(files: File[], isAuthor: boolean) {
+    this.files = files.map((file) => new FileResponseDto(file));
+    this.isAuthor = isAuthor;
   }
 
   isAuthor: boolean;
