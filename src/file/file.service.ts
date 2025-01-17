@@ -27,9 +27,14 @@ export class FileService {
       throw new BadRequestException('No file uploaded');
     }
 
+    for (const file of files) {
+      if (!fs.existsSync(file.path)) {
+        throw new NotFoundException('File not exist');
+      }
+    }
+
     const thread = await this.threadRepository.findOne({
       where: { id: threadId },
-      relations: ['files'],
     });
 
     if (!thread) {
@@ -39,8 +44,6 @@ export class FileService {
     if (thread.user.id !== userId) {
       throw new BadRequestException('You are not the owner of this thread');
     }
-
-    const threadFiles = await thread.files;
 
     for (const file of files) {
       const newFile = new File();
@@ -56,11 +59,7 @@ export class FileService {
       if (!savedFile) {
         throw new InternalServerErrorException('Failed to save file');
       }
-
-      threadFiles.push(newFile);
     }
-
-    await this.threadRepository.save(thread);
 
     return 'File uploaded successfully';
   }
