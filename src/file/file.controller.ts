@@ -4,7 +4,6 @@ import {
   Controller,
   Delete,
   Get,
-  Logger,
   Param,
   Post,
   Res,
@@ -39,10 +38,15 @@ export class FileController {
           callback(null, filename);
         },
       }),
+      limits: {
+        files: 10,
+        fileSize: 1000000,
+      },
     }),
   )
   uploadFiles(
-    @UploadedFiles() files: Array<Express.Multer.File>,
+    @UploadedFiles()
+    files: Array<Express.Multer.File>,
     @Param('threadId') threadId: number,
     @GetUserId() userId: number,
   ) {
@@ -56,7 +60,6 @@ export class FileController {
   ) {
     const fileList = await this.fileService.getFiles(threadId);
 
-    new Logger(FileController.name).log(JSON.stringify(fileList), userId);
     return new FileListResponseDto(fileList, userId);
   }
 
