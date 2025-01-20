@@ -46,13 +46,14 @@ export class FileService {
     }
 
     for (const file of files) {
-      const newFile = new File();
-      newFile.name = file.filename;
-      newFile.originalName = file.originalname;
-      newFile.path = file.path;
-      newFile.size = file.size;
-      newFile.threadId = threadId;
-      newFile.userId = userId;
+      const newFile = this.fileRepository.create({
+        name: file.filename,
+        originalName: file.originalname,
+        path: file.path,
+        size: file.size,
+        threadId,
+        userId,
+      });
 
       const savedFile = await this.fileRepository.save(newFile);
 

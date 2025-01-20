@@ -60,10 +60,11 @@ export class CommentsService {
       throw new NotFoundException(`Thread with id ${threadId} not found`);
     }
 
-    const comment = new Comment();
-    comment.content = createCommentDto.content;
-    comment.user = user;
-    comment.thread = Promise.resolve(thread);
+    const comment = this.commentsRepository.create({
+      content: createCommentDto.content,
+      user,
+      thread: Promise.resolve(thread),
+    });
 
     const result = this.commentsRepository.save(comment);
 

@@ -30,10 +30,11 @@ export class ThreadsService {
       throw new NotFoundException(`User with id ${userid} not found`);
     }
 
-    const thread = new Thread();
-    thread.title = createThreadDto.title;
-    thread.content = createThreadDto.content;
-    thread.user = user;
+    const thread = this.threadRepository.create({
+      title: createThreadDto.title,
+      content: createThreadDto.content,
+      user,
+    });
 
     const result = await this.threadRepository.save(thread);
 
