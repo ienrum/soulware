@@ -9,23 +9,15 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { File } from '../../file/entities/file.entity';
+import { BaseEntity } from '../../common/entities/base.entity';
 
 @Entity()
-export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class User extends BaseEntity {
   @Column({ unique: true, length: 20 })
   name: string;
 
   @Column({ length: 255 })
   password: string;
-  @CreateDateColumn({
-    name: 'created_at',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  createdAt: Date;
 
   @OneToMany(() => Thread, (thread) => thread.user, { lazy: true })
   threads: Promise<Thread[]>;

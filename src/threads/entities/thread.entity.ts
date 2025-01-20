@@ -1,21 +1,11 @@
 import { User } from 'src/users/entities/User.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
 import { File } from 'src/file/entities/file.entity';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { BaseEntity } from '../../common/entities/base.entity';
 
 @Entity()
-export class Thread {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Thread extends BaseEntity {
   @Column({ length: 20, nullable: true })
   title: string;
 
@@ -24,20 +14,6 @@ export class Thread {
 
   @Column({ name: 'view_count', default: 0 })
   viewCount: number;
-
-  @CreateDateColumn({
-    name: 'created_at',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  createdAt: Date;
-
-  @UpdateDateColumn({
-    name: 'updated_at',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.threads, { eager: true })
   user: User;
