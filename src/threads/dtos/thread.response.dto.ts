@@ -1,4 +1,4 @@
-import { Exclude, Expose, Type } from 'class-transformer';
+import { Exclude, Type } from 'class-transformer';
 import { Thread } from 'src/threads/entities/thread.entity';
 import { User } from 'src/users/entities/User.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
