@@ -50,15 +50,23 @@ export class ThreadsController {
   async findAll(
     @Query() query: PaginationQuryDto,
   ): Promise<ThreadListResponseDto> {
-    return this.threadsService.findAll(query.page, query.limit, query.search);
+    const { threads, totalPage } = await this.threadsService.findAll(
+      query.page,
+      query.limit,
+      query.search,
+    );
+
+    return new ThreadListResponseDto(threads, totalPage);
   }
 
   @Get(':id')
-  findOne(
+  async findOne(
     @Param('id') id: number,
     @GetUserId() userid: number,
   ): Promise<ThreadResponseDto> {
-    return this.threadsService.findOne(id, userid);
+    const thread = await this.threadsService.findOne(id);
+
+    return new ThreadResponseDto(thread, userid);
   }
 
   @UseGuards(AuthGuard)

@@ -6,10 +6,6 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateThreadDto } from 'src/threads/dtos/create-thread.dto';
-import {
-  ThreadResponseDto,
-  ThreadListResponseDto,
-} from 'src/threads/dtos/thread.response.dto';
 import { UpdateThreadDto } from 'src/threads/dtos/update-thread.dto';
 import { Thread } from 'src/threads/entities/thread.entity';
 import { UsersService } from 'src/users/users.service';
@@ -45,7 +41,7 @@ export class ThreadsService {
     return 'Thread created successfully';
   }
 
-  async findOne(id: number, authorid: number) {
+  async findOne(id: number) {
     const thread = await this.threadRepository.findOne({
       where: { id },
     });
@@ -54,7 +50,7 @@ export class ThreadsService {
       throw new NotFoundException(`Thread with id ${id} not found`);
     }
 
-    return new ThreadResponseDto(thread, authorid);
+    return thread;
   }
 
   async findAll(page?: number, limit?: number, search?: string) {
@@ -69,7 +65,7 @@ export class ThreadsService {
 
     const totalPage = Math.ceil(totalThreadsCount / (limit || this.MAX_LIMIT));
 
-    return new ThreadListResponseDto(threads, totalPage);
+    return { threads, totalPage };
   }
 
   async update(id: number, UpdateThreadDto: UpdateThreadDto, authorId: number) {

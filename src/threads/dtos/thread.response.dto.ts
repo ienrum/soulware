@@ -23,9 +23,9 @@ export class ThreadResponseDto {
   @Type(() => Author)
   author: Author;
   constructor(data: Thread, myId: number) {
+    Object.assign(this, data);
     this.author = data.user;
     this.isAuthor = data.user.id === myId;
-    Object.assign(this, data);
   }
 
   @Exclude()
@@ -38,8 +38,8 @@ export class ThreadItem extends Thread {
 
   constructor(data: Thread) {
     super();
-    this.author = data.user;
     Object.assign(this, data);
+    this.author = data.user;
   }
 
   @Exclude()
