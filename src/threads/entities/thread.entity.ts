@@ -1,5 +1,6 @@
 import { User } from 'src/users/entities/User.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
+import { File } from 'src/file/entities/file.entity';
 import {
   Column,
   CreateDateColumn,
@@ -42,5 +43,8 @@ export class Thread {
   user: User;
 
   @OneToMany(() => Comment, (comment) => comment.thread, { lazy: true })
-  comments: Comment[];
+  comments: Promise<Comment[]>;
+
+  @OneToMany(() => File, (file) => file.thread, { lazy: true })
+  files: Promise<File[]>;
 }

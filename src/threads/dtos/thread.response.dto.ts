@@ -1,4 +1,4 @@
-import { Exclude, Type } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 import { Thread } from 'src/threads/entities/thread.entity';
 import { User } from 'src/users/entities/User.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
@@ -7,9 +7,9 @@ class Author extends User {
   @Exclude()
   password: string;
   @Exclude()
-  threads: Thread[];
+  threads: Promise<Thread[]>;
   @Exclude()
-  comments: Comment[];
+  comments: Promise<Comment[]>;
   @Exclude()
   createdAt: Date;
 }
@@ -45,7 +45,7 @@ export class ThreadItem extends Thread {
   @Exclude()
   user: User;
   @Exclude()
-  comments: Comment[];
+  comments: Promise<Comment[]>;
 }
 
 export class ThreadListResponseDto {

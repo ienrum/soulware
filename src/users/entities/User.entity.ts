@@ -1,5 +1,6 @@
 import { Thread } from 'src/threads/entities/thread.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
+
 import {
   Column,
   CreateDateColumn,
@@ -7,6 +8,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { File } from '../../file/entities/file.entity';
 
 @Entity()
 export class User {
@@ -26,8 +28,11 @@ export class User {
   createdAt: Date;
 
   @OneToMany(() => Thread, (thread) => thread.user, { lazy: true })
-  threads: Thread[];
+  threads: Promise<Thread[]>;
 
   @OneToMany(() => Comment, (comment) => comment.user, { lazy: true })
-  comments: Comment[];
+  comments: Promise<Comment[]>;
+
+  @OneToMany(() => File, (file) => file.thread, { lazy: true })
+  files: Promise<File[]>;
 }
