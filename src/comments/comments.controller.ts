@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from 'src/comments/dtos/create-comment.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { GetUserId } from 'src/auth/decorators/get-userid.decorator';
 import { UpdateCommentDto } from 'src/comments/dtos/update-comment.dto';
 import {

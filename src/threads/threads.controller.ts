@@ -19,7 +19,7 @@ import {
   ThreadListResponseDto,
 } from 'src/threads/dtos/thread.response.dto';
 import { PaginationQuryDto } from 'src/threads/dtos/pagenation.query.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { GetUserId } from 'src/auth/decorators/get-userid.decorator';
 
 @UseInterceptors(ClassSerializerInterceptor)
