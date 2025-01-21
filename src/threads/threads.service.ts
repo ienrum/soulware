@@ -37,8 +37,6 @@ export class ThreadsService {
     if (!result) {
       throw new InternalServerErrorException('Failed to create thread');
     }
-
-    return 'Thread created successfully';
   }
 
   async findOne(id: number) {
@@ -81,7 +79,7 @@ export class ThreadsService {
       throw new ForbiddenException('You are not allowed to update this thread');
     }
 
-    return await this.threadRepository.update(id, UpdateThreadDto);
+    await this.threadRepository.update(id, UpdateThreadDto);
   }
 
   async delete(id: number, authorId: number) {
@@ -102,8 +100,6 @@ export class ThreadsService {
     if (result.affected === 0) {
       throw new InternalServerErrorException('Failed to delete thread');
     }
-
-    return result;
   }
 
   async isAuthor(threadId: number, userId: number) {

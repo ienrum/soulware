@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
 import { map, Observable } from 'rxjs';
 import { BaseResponseDto } from '../base-response.dto';
@@ -13,8 +13,14 @@ export class ResponseInterceptor implements NestInterceptor {
 
   handleResponse(context: ExecutionContext, data: unknown) {
     const response = context.switchToHttp().getResponse();
-    const message = response.message || 'Success';
+    const isStringData = typeof data === 'string';
+    const responseMessage = isStringData ? data : 'Success';
+    const responseData = isStringData ? null : data;
 
-    return new BaseResponseDto(response.statusCode, message, data);
+    return new BaseResponseDto(
+      response.statusCode,
+      responseMessage,
+      responseData,
+    );
   }
 }
