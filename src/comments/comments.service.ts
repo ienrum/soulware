@@ -22,12 +22,10 @@ export class CommentsService {
   ) {}
 
   async findAllForThread(threadId: number) {
-    const comments = await this.commentsRepository.find({
+    return await this.commentsRepository.find({
       where: { thread: { id: threadId } },
       order: { createdAt: 'DESC' },
     });
-
-    return comments;
   }
 
   async findOne(commentId: number) {
@@ -63,10 +61,11 @@ export class CommentsService {
     const comment = this.commentsRepository.create({
       content: createCommentDto.content,
       user,
-      thread: Promise.resolve(thread),
     });
 
-    const result = this.commentsRepository.save(comment);
+    comment.thread = Promise.resolve(thread);
+
+    const result = await this.commentsRepository.save(comment);
 
     if (!result) {
       throw new InternalServerErrorException('Failed to create comment');
