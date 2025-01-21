@@ -2,6 +2,7 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  ForbiddenException,
   Get,
   Param,
   Post,
@@ -49,7 +50,7 @@ export class FileController {
       },
     }),
   )
-  uploadFiles(
+  async uploadFiles(
     @UploadedFiles()
     files: Array<Express.Multer.File>,
     @Param('threadId') threadId: number,
@@ -79,8 +80,20 @@ export class FileController {
   }
 
   @UseGuards(AuthGuard)
-  @Post('delete')
-  deleteFiles(@Body('ids') ids: number[]) {
-    return this.fileService.deleteFiles(ids);
+  @Post(':threadId/delete')
+  async deleteFiles(
+    @Param('threadId') threadId: number,
+    @GetUserId() userId: number,
+    @Body('ids') ids: number[],
+  ) {
+    const isAuthor = await this.threadsService.isAuthor(threadId, userId);
+
+    if (!isAuthor) {
+      throw new ForbiddenException('You are not the owner of this thread');
+    }
+
+    await this.fileService.deleteFiles(ids);
+
+    return 'Files deleted successfully';
   }
 }

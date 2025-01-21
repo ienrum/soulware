@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,28 +10,27 @@ import { In, Repository } from 'typeorm';
 
 import { File } from './entities/file.entity';
 import { Thread } from 'src/threads/entities/thread.entity';
-
-import * as fs from 'fs';
+import { FileApiService } from '../file-api/file-api.service';
 
 @Injectable()
 export class FileService {
   constructor(
     @InjectRepository(File) private fileRepository: Repository<File>,
     @InjectRepository(Thread) private threadRepository: Repository<Thread>,
+    private readonly fileApiService: FileApiService,
   ) {}
   async uploadFiles(
     files: Array<Express.Multer.File>,
     threadId: number,
     userId: number,
   ) {
+    new Logger().log(JSON.stringify(files));
     if (!files) {
       throw new BadRequestException('No file uploaded');
     }
 
     for (const file of files) {
-      if (!fs.existsSync(file.path)) {
-        throw new NotFoundException('File not exist');
-      }
+      this.fileApiService.checkFileExist(file.path);
     }
 
     const thread = await this.threadRepository.findOne({
@@ -90,9 +90,7 @@ export class FileService {
       throw new NotFoundException('File not found');
     }
 
-    if (!fs.existsSync(file.path)) {
-      throw new NotFoundException('File not found');
-    }
+    this.fileApiService.checkFileExist(file.path);
 
     return file;
   }
@@ -112,17 +110,7 @@ export class FileService {
       throw new NotFoundException('File not found');
     }
 
-    const deletedFiles: File[] = [];
-
-    for (const file of files) {
-      fs.unlinkSync(file.path);
-
-      if (fs.existsSync(file.path)) {
-        break;
-      }
-
-      deletedFiles.push(file);
-    }
+    const deletedFiles = this.fileApiService.deleteFiles(files);
 
     if (deletedFiles.length !== ids.length) {
       const deletedFilesId = deletedFiles.map((file) => file.id);
@@ -143,7 +131,5 @@ export class FileService {
     if (result.affected === 0) {
       throw new InternalServerErrorException('Failed to delete file');
     }
-
-    return 'File deleted successfully';
   }
 }

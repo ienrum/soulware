@@ -6,10 +6,11 @@ import { File } from 'src/file/entities/file.entity';
 import { Thread } from 'src/threads/entities/thread.entity';
 import { ThreadsService } from 'src/threads/threads.service';
 import { ThreadsModule } from '../threads/threads.module';
+import { FileApiService } from '../file-api/file-api.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([File, Thread]), ThreadsModule],
   controllers: [FileController],
-  providers: [FileService],
+  providers: [FileService, FileApiService],
 })
 export class FileModule {}
