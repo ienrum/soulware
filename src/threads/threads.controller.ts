@@ -29,21 +29,25 @@ export class ThreadsController {
 
   @UseGuards(AuthGuard)
   @Post()
-  create(
+  async create(
     @GetUserId() userid: number,
     @Body() createThreadDto: CreateThreadDto,
   ) {
-    return this.threadsService.create(userid, createThreadDto);
+    await this.threadsService.create(userid, createThreadDto);
+
+    return 'Thread created successfully';
   }
 
   @UseGuards(AuthGuard)
   @Put(':id')
-  update(
+  async update(
     @Param('id') id: number,
     @Body() updateThreadDto: UpdateThreadDto,
     @GetUserId() userid: number,
   ) {
-    return this.threadsService.update(id, updateThreadDto, userid);
+    await this.threadsService.update(id, updateThreadDto, userid);
+
+    return 'Thread updated successfully';
   }
 
   @Get()
@@ -71,7 +75,9 @@ export class ThreadsController {
 
   @UseGuards(AuthGuard)
   @Delete(':id')
-  delete(@Param('id') id: number, @GetUserId() userid: number) {
-    return this.threadsService.delete(id, userid);
+  async delete(@Param('id') id: number, @GetUserId() userid: number) {
+    await this.threadsService.delete(id, userid);
+
+    return 'Thread deleted successfully';
   }
 }

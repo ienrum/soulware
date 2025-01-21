@@ -61,8 +61,6 @@ export class FileService {
         throw new InternalServerErrorException('Failed to save file');
       }
     }
-
-    return 'File uploaded successfully';
   }
 
   async getFiles(threadId: number) {

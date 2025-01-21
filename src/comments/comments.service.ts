@@ -71,8 +71,6 @@ export class CommentsService {
     if (!result) {
       throw new InternalServerErrorException('Failed to create comment');
     }
-
-    return 'Comment created successfully';
   }
 
   async update(
@@ -98,8 +96,6 @@ export class CommentsService {
     if (result.affected === 0) {
       throw new InternalServerErrorException('Failed to update comment');
     }
-
-    return 'Comment updated successfully';
   }
 
   async delete(userId: number, commentId: number) {
@@ -119,7 +115,5 @@ export class CommentsService {
     if (result.affected === 0) {
       throw new InternalServerErrorException('Failed to delete comment');
     }
-
-    return 'Comment deleted successfully';
   }
 }

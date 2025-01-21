@@ -47,27 +47,36 @@ export class CommentsController {
 
   @UseGuards(AuthGuard)
   @Post()
-  create(
+  async create(
     @GetUserId() userId: number,
     @Param('threadId') threadId: number,
     @Body() createCommentDto: CreateCommentDto,
   ) {
-    return this.commentsService.create(userId, threadId, createCommentDto);
+    await this.commentsService.create(userId, threadId, createCommentDto);
+
+    return 'Comment created successfully';
   }
 
   @UseGuards(AuthGuard)
   @Put(':commentId')
-  update(
+  async update(
     @GetUserId() userId: number,
     @Param('commentId') commentId: number,
     @Body() updateCommentDto: UpdateCommentDto,
   ) {
-    return this.commentsService.update(userId, commentId, updateCommentDto);
+    await this.commentsService.update(userId, commentId, updateCommentDto);
+
+    return 'Comment updated successfully';
   }
 
   @UseGuards(AuthGuard)
   @Delete(':commentId')
-  delete(@GetUserId() userId: number, @Param('commentId') commentId: number) {
-    return this.commentsService.delete(userId, commentId);
+  async delete(
+    @GetUserId() userId: number,
+    @Param('commentId') commentId: number,
+  ) {
+    await this.commentsService.delete(userId, commentId);
+
+    return 'Comment deleted successfully';
   }
 }

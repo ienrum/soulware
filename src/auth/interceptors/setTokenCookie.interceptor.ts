@@ -25,7 +25,7 @@ export class SetTokenCookieInterceptor implements NestInterceptor {
           });
         }
 
-        return restData;
+        return restData.message;
       }),
     );
   }

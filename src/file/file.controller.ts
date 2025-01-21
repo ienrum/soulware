@@ -55,7 +55,9 @@ export class FileController {
     @Param('threadId') threadId: number,
     @GetUserId() userId: number,
   ) {
-    return this.fileService.uploadFiles(files, threadId, userId);
+    await this.fileService.uploadFiles(files, threadId, userId);
+
+    return 'File uploaded successfully';
   }
 
   @Get(':threadId')
