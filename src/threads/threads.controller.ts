@@ -5,6 +5,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -41,7 +42,7 @@ export class ThreadsController {
   @UseGuards(AuthGuard)
   @Put(':id')
   async update(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateThreadDto: UpdateThreadDto,
     @GetUserId() userid: number,
   ) {
@@ -65,7 +66,7 @@ export class ThreadsController {
 
   @Get(':id')
   async findOne(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @GetUserId() userid: number,
   ): Promise<ThreadResponseDto> {
     const thread = await this.threadsService.findOne(id);
@@ -75,7 +76,10 @@ export class ThreadsController {
 
   @UseGuards(AuthGuard)
   @Delete(':id')
-  async delete(@Param('id') id: number, @GetUserId() userid: number) {
+  async delete(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUserId() userid: number,
+  ) {
     await this.threadsService.delete(id, userid);
 
     return 'Thread deleted successfully';

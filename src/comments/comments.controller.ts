@@ -6,6 +6,7 @@ import {
   Get,
   Logger,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   UseGuards,
@@ -28,7 +29,7 @@ export class CommentsController {
 
   @Get()
   async findAllForThread(
-    @Param('threadId') threadId: number,
+    @Param('threadId', ParseIntPipe) threadId: number,
     @GetUserId() userId: number,
   ) {
     const comments = await this.commentsService.findAllForThread(threadId);
@@ -38,7 +39,7 @@ export class CommentsController {
 
   @Get(':commentId')
   async findOne(
-    @Param('commentId') commentId: number,
+    @Param('commentId', ParseIntPipe) commentId: number,
     @GetUserId() userId: number,
   ) {
     const comment = await this.commentsService.findOne(commentId);
@@ -50,7 +51,7 @@ export class CommentsController {
   @Post()
   async create(
     @GetUserId() userId: number,
-    @Param('threadId') threadId: number,
+    @Param('threadId', ParseIntPipe) threadId: number,
     @Body() createCommentDto: CreateCommentDto,
   ) {
     await this.commentsService.create(userId, threadId, createCommentDto);
@@ -62,7 +63,7 @@ export class CommentsController {
   @Put(':commentId')
   async update(
     @GetUserId() userId: number,
-    @Param('commentId') commentId: number,
+    @Param('commentId', ParseIntPipe) commentId: number,
     @Body() updateCommentDto: UpdateCommentDto,
   ) {
     await this.commentsService.update(userId, commentId, updateCommentDto);
@@ -74,7 +75,7 @@ export class CommentsController {
   @Delete(':commentId')
   async delete(
     @GetUserId() userId: number,
-    @Param('commentId') commentId: number,
+    @Param('commentId', ParseIntPipe) commentId: number,
   ) {
     await this.commentsService.delete(userId, commentId);
 
