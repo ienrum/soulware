@@ -4,7 +4,9 @@ import {
   Controller,
   Delete,
   Get,
+  Logger,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   UseGuards,
@@ -12,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from 'src/comments/dtos/create-comment.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { GetUserId } from 'src/auth/decorators/get-userid.decorator';
 import { UpdateCommentDto } from 'src/comments/dtos/update-comment.dto';
 import {
@@ -27,7 +29,7 @@ export class CommentsController {
 
   @Get()
   async findAllForThread(
-    @Param('threadId') threadId: number,
+    @Param('threadId', ParseIntPipe) threadId: number,
     @GetUserId() userId: number,
   ) {
     const comments = await this.commentsService.findAllForThread(threadId);
@@ -37,7 +39,7 @@ export class CommentsController {
 
   @Get(':commentId')
   async findOne(
-    @Param('commentId') commentId: number,
+    @Param('commentId', ParseIntPipe) commentId: number,
     @GetUserId() userId: number,
   ) {
     const comment = await this.commentsService.findOne(commentId);
@@ -47,27 +49,36 @@ export class CommentsController {
 
   @UseGuards(AuthGuard)
   @Post()
-  create(
+  async create(
     @GetUserId() userId: number,
-    @Param('threadId') threadId: number,
+    @Param('threadId', ParseIntPipe) threadId: number,
     @Body() createCommentDto: CreateCommentDto,
   ) {
-    return this.commentsService.create(userId, threadId, createCommentDto);
+    await this.commentsService.create(userId, threadId, createCommentDto);
+
+    return 'Comment created successfully';
   }
 
   @UseGuards(AuthGuard)
   @Put(':commentId')
-  update(
+  async update(
     @GetUserId() userId: number,
-    @Param('commentId') commentId: number,
+    @Param('commentId', ParseIntPipe) commentId: number,
     @Body() updateCommentDto: UpdateCommentDto,
   ) {
-    return this.commentsService.update(userId, commentId, updateCommentDto);
+    await this.commentsService.update(userId, commentId, updateCommentDto);
+
+    return 'Comment updated successfully';
   }
 
   @UseGuards(AuthGuard)
   @Delete(':commentId')
-  delete(@GetUserId() userId: number, @Param('commentId') commentId: number) {
-    return this.commentsService.delete(userId, commentId);
+  async delete(
+    @GetUserId() userId: number,
+    @Param('commentId', ParseIntPipe) commentId: number,
+  ) {
+    await this.commentsService.delete(userId, commentId);
+
+    return 'Comment deleted successfully';
   }
 }

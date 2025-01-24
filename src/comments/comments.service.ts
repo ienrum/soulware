@@ -22,12 +22,10 @@ export class CommentsService {
   ) {}
 
   async findAllForThread(threadId: number) {
-    const comments = await this.commentsRepository.find({
+    return await this.commentsRepository.find({
       where: { thread: { id: threadId } },
       order: { createdAt: 'DESC' },
     });
-
-    return comments;
   }
 
   async findOne(commentId: number) {
@@ -60,18 +58,18 @@ export class CommentsService {
       throw new NotFoundException(`Thread with id ${threadId} not found`);
     }
 
-    const comment = new Comment();
-    comment.content = createCommentDto.content;
-    comment.user = user;
+    const comment = this.commentsRepository.create({
+      content: createCommentDto.content,
+      user,
+    });
+
     comment.thread = Promise.resolve(thread);
 
-    const result = this.commentsRepository.save(comment);
+    const result = await this.commentsRepository.save(comment);
 
     if (!result) {
       throw new InternalServerErrorException('Failed to create comment');
     }
-
-    return 'Comment created successfully';
   }
 
   async update(
@@ -97,8 +95,6 @@ export class CommentsService {
     if (result.affected === 0) {
       throw new InternalServerErrorException('Failed to update comment');
     }
-
-    return 'Comment updated successfully';
   }
 
   async delete(userId: number, commentId: number) {
@@ -118,7 +114,5 @@ export class CommentsService {
     if (result.affected === 0) {
       throw new InternalServerErrorException('Failed to delete comment');
     }
-
-    return 'Comment deleted successfully';
   }
 }

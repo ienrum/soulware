@@ -5,6 +5,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -19,7 +20,7 @@ import {
   ThreadListResponseDto,
 } from 'src/threads/dtos/thread.response.dto';
 import { PaginationQuryDto } from 'src/threads/dtos/pagenation.query.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { GetUserId } from 'src/auth/decorators/get-userid.decorator';
 
 @UseInterceptors(ClassSerializerInterceptor)
@@ -29,41 +30,58 @@ export class ThreadsController {
 
   @UseGuards(AuthGuard)
   @Post()
-  create(
+  async create(
     @GetUserId() userid: number,
     @Body() createThreadDto: CreateThreadDto,
   ) {
-    return this.threadsService.create(userid, createThreadDto);
+    await this.threadsService.create(userid, createThreadDto);
+
+    return 'Thread created successfully';
   }
 
   @UseGuards(AuthGuard)
   @Put(':id')
-  update(
-    @Param('id') id: number,
+  async update(
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateThreadDto: UpdateThreadDto,
     @GetUserId() userid: number,
   ) {
-    return this.threadsService.update(id, updateThreadDto, userid);
+    await this.threadsService.update(id, updateThreadDto, userid);
+
+    return 'Thread updated successfully';
   }
 
   @Get()
   async findAll(
     @Query() query: PaginationQuryDto,
   ): Promise<ThreadListResponseDto> {
-    return this.threadsService.findAll(query.page, query.limit, query.search);
+    const { threads, totalPage } = await this.threadsService.findAll(
+      query.page,
+      query.limit,
+      query.search,
+    );
+
+    return new ThreadListResponseDto(threads, totalPage);
   }
 
   @Get(':id')
-  findOne(
-    @Param('id') id: number,
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
     @GetUserId() userid: number,
   ): Promise<ThreadResponseDto> {
-    return this.threadsService.findOne(id, userid);
+    const thread = await this.threadsService.findOne(id);
+
+    return new ThreadResponseDto(thread, userid);
   }
 
   @UseGuards(AuthGuard)
   @Delete(':id')
-  delete(@Param('id') id: number, @GetUserId() userid: number) {
-    return this.threadsService.delete(id, userid);
+  async delete(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUserId() userid: number,
+  ) {
+    await this.threadsService.delete(id, userid);
+
+    return 'Thread deleted successfully';
   }
 }

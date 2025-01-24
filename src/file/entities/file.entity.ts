@@ -1,12 +1,10 @@
 import { Thread } from 'src/threads/entities/thread.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../../users/entities/User.entity';
+import { BaseEntity } from '../../common/entities/base.entity';
 
 @Entity()
-export class File {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class File extends BaseEntity {
   @Column({ length: 255, unique: true })
   name: string;
 
@@ -18,13 +16,6 @@ export class File {
 
   @Column()
   size: number;
-
-  @Column({
-    name: 'created_at',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  createdAt: Date;
 
   @Column({ nullable: true })
   threadId: number;

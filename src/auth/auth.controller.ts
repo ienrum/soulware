@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Res,
-  UseInterceptors,
-  Get,
-} from '@nestjs/common';
+import { Controller, Post, Body, UseInterceptors, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserSignUpDto } from './dto/user-signup.dto';
 import { UserSignInDto } from 'src/auth/dto/user-signin.dto';
@@ -18,8 +11,10 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
-  signUp(@Body() userSignUpDto: UserSignUpDto) {
-    return this.authService.signUp(userSignUpDto);
+  async signUp(@Body() userSignUpDto: UserSignUpDto) {
+    await this.authService.signUp(userSignUpDto);
+
+    return 'User created successfully';
   }
 
   @UseInterceptors(SetTokenCookieInterceptor)

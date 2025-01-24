@@ -33,8 +33,6 @@ export class AuthService {
     } catch (error) {
       throw new ConflictException('User already exists');
     }
-
-    return { message: 'User created successfully' };
   }
 
   async signIn(userSignInDto: UserSignInDto) {

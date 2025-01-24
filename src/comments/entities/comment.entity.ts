@@ -1,36 +1,12 @@
 import { Thread } from 'src/threads/entities/thread.entity';
 import { User } from 'src/users/entities/User.entity';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
+import { BaseEntity } from '../../common/entities/base.entity';
 
 @Entity()
-export class Comment {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Comment extends BaseEntity {
   @Column({ type: 'text' })
   content: string;
-
-  @CreateDateColumn({
-    name: 'created_at',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  createdAt: Date;
-
-  @UpdateDateColumn({
-    name: 'updated_at',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP',
-  })
-  updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.comments, {
     eager: true,

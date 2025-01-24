@@ -6,10 +6,6 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateThreadDto } from 'src/threads/dtos/create-thread.dto';
-import {
-  ThreadResponseDto,
-  ThreadListResponseDto,
-} from 'src/threads/dtos/thread.response.dto';
 import { UpdateThreadDto } from 'src/threads/dtos/update-thread.dto';
 import { Thread } from 'src/threads/entities/thread.entity';
 import { UsersService } from 'src/users/users.service';
@@ -30,21 +26,20 @@ export class ThreadsService {
       throw new NotFoundException(`User with id ${userid} not found`);
     }
 
-    const thread = new Thread();
-    thread.title = createThreadDto.title;
-    thread.content = createThreadDto.content;
-    thread.user = user;
+    const thread = this.threadRepository.create({
+      title: createThreadDto.title,
+      content: createThreadDto.content,
+      user,
+    });
 
     const result = await this.threadRepository.save(thread);
 
     if (!result) {
       throw new InternalServerErrorException('Failed to create thread');
     }
-
-    return 'Thread created successfully';
   }
 
-  async findOne(id: number, authorid: number) {
+  async findOne(id: number) {
     const thread = await this.threadRepository.findOne({
       where: { id },
     });
@@ -53,7 +48,7 @@ export class ThreadsService {
       throw new NotFoundException(`Thread with id ${id} not found`);
     }
 
-    return new ThreadResponseDto(thread, authorid);
+    return thread;
   }
 
   async findAll(page?: number, limit?: number, search?: string) {
@@ -68,7 +63,7 @@ export class ThreadsService {
 
     const totalPage = Math.ceil(totalThreadsCount / (limit || this.MAX_LIMIT));
 
-    return new ThreadListResponseDto(threads, totalPage);
+    return { threads, totalPage };
   }
 
   async update(id: number, UpdateThreadDto: UpdateThreadDto, authorId: number) {
@@ -84,7 +79,7 @@ export class ThreadsService {
       throw new ForbiddenException('You are not allowed to update this thread');
     }
 
-    return await this.threadRepository.update(id, UpdateThreadDto);
+    await this.threadRepository.update(id, UpdateThreadDto);
   }
 
   async delete(id: number, authorId: number) {
@@ -105,8 +100,6 @@ export class ThreadsService {
     if (result.affected === 0) {
       throw new InternalServerErrorException('Failed to delete thread');
     }
-
-    return result;
   }
 
   async isAuthor(threadId: number, userId: number) {
