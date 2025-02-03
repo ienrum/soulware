@@ -68,7 +68,7 @@ export class FileService {
     });
   }
 
-  async getAndCheckFile(id: number) {
+  async getAndCheckFileExist(id: number) {
     const file = await this.fileRepository.findOne({
       where: {
         id,

@@ -59,12 +59,7 @@ export class CommentsService {
     commentId: number,
     updateCommentDto: UpdateCommentDto,
   ) {
-    const comment = await this.findCommentById(commentId);
-
-    if (!comment.isAuthorBy(userId)) {
-      throw new NotFoundException('You are not allowed to update this comment');
-    }
-
+    await this.getAndCheckIsAuthor(commentId, userId);
     const result = await this.commentsRepository.update(commentId, {
       ...updateCommentDto,
     });
@@ -75,17 +70,23 @@ export class CommentsService {
   }
 
   async delete(userId: number, commentId: number) {
-    const comment = await this.findCommentById(commentId);
-
-    if (!comment.isAuthorBy(userId)) {
-      throw new NotFoundException('You are not allowed to delete this comment');
-    }
+    await this.getAndCheckIsAuthor(commentId, userId);
 
     const result = await this.commentsRepository.delete(commentId);
 
     if (result.affected === 0) {
       throw new InternalServerErrorException('Failed to delete comment');
     }
+  }
+
+  async getAndCheckIsAuthor(commentId: number, userId: number) {
+    const comment = await this.findCommentById(commentId);
+
+    if (!comment.isAuthorBy(userId)) {
+      throw new NotFoundException('You are not allowed to update this comment');
+    }
+
+    return comment;
   }
 
   private async findCommentById(commentId: number) {

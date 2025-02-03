@@ -51,21 +51,12 @@ export class ThreadsService {
   }
 
   async update(id: number, UpdateThreadDto: UpdateThreadDto, authorId: number) {
-    const thread = await this.getThreadById(id);
-
-    if (!thread.isAuthorBy(authorId)) {
-      throw new ForbiddenException('You are not allowed to update this thread');
-    }
-
+    await this.getAndCheckIsAuthor(id, authorId);
     await this.threadRepository.update(id, UpdateThreadDto);
   }
 
   async delete(id: number, authorId: number) {
-    const thread = await this.getThreadById(id);
-
-    if (!thread.isAuthorBy(authorId)) {
-      throw new ForbiddenException('You are not allowed to delete this thread');
-    }
+    await this.getAndCheckIsAuthor(id, authorId);
 
     const result = await this.threadRepository.delete(id);
 
@@ -74,10 +65,14 @@ export class ThreadsService {
     }
   }
 
-  async isAuthor(threadId: number, userId: number) {
+  async getAndCheckIsAuthor(threadId: number, userId: number) {
     const thread = await this.getThreadById(threadId);
 
-    return thread?.isAuthorBy(userId);
+    if (!thread.isAuthorBy(userId)) {
+      throw new ForbiddenException('You are not allowed to update this thread');
+    }
+
+    return thread;
   }
 
   private async getThreadById(threadId: number) {
