@@ -81,15 +81,16 @@ export class CommentsService {
       where: { id: commentId },
     });
 
-    if (comment.user.id !== userId) {
-      throw new NotFoundException('You are not allowed to update this comment');
-    }
     if (!comment) {
       throw new NotFoundException(`Comment with id ${commentId} not found`);
     }
 
+    if (!comment.isAuthorBy(userId)) {
+      throw new NotFoundException('You are not allowed to update this comment');
+    }
+
     const result = await this.commentsRepository.update(commentId, {
-      content: updateCommentDto.content,
+      ...updateCommentDto,
     });
 
     if (result.affected === 0) {
@@ -102,11 +103,12 @@ export class CommentsService {
       where: { id: commentId },
     });
 
-    if (comment.user.id !== userId) {
-      throw new NotFoundException('You are not allowed to delete this comment');
-    }
     if (!comment) {
       throw new NotFoundException(`Comment with id ${commentId} not found`);
+    }
+
+    if (!comment.isAuthorBy(userId)) {
+      throw new NotFoundException('You are not allowed to delete this comment');
     }
 
     const result = await this.commentsRepository.delete(commentId);

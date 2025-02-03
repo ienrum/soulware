@@ -41,7 +41,7 @@ export class FileService {
       throw new NotFoundException('Thread not found');
     }
 
-    if (thread.user.id !== userId) {
+    if (!thread.isAuthorBy(userId)) {
       throw new BadRequestException('You are not the owner of this thread');
     }
 
@@ -64,19 +64,14 @@ export class FileService {
   }
 
   async getFiles(threadId: number) {
-    const files = await this.fileRepository.find({
+    return await this.fileRepository.find({
       where: {
         thread: {
           id: threadId,
         },
       },
+      relations: ['thread'],
     });
-
-    if (!files) {
-      throw new NotFoundException('Files not found');
-    }
-
-    return files;
   }
 
   async downloadFile(id: number) {

@@ -1,6 +1,5 @@
 import { Exclude, Type } from 'class-transformer';
 import { Comment } from 'src/comments/entities/comment.entity';
-import { Thread } from 'src/threads/entities/thread.entity';
 import { User } from 'src/users/entities/User.entity';
 
 class UserResponseDto extends User {
@@ -19,7 +18,7 @@ export class CommentResponseDto {
   updatedAt: Date;
   isAuthor: boolean;
   constructor(comment: Comment, myId: number) {
-    this.isAuthor = comment.user.id === myId;
+    this.isAuthor = comment.isAuthorBy(myId);
     Object.assign(this, comment);
   }
 

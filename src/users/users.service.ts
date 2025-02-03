@@ -15,10 +15,8 @@ export class UsersService {
   }
 
   findOne(userId: number): Promise<User> {
-    return this.usersRepository.findOne({
-      where: {
-        id: userId,
-      },
+    return this.usersRepository.findOneBy({
+      id: userId,
     });
   }
 }

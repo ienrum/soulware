@@ -19,4 +19,9 @@ export class Comment extends BaseEntity {
     onDelete: 'CASCADE',
   })
   thread: Promise<Thread>;
+
+  isAuthorBy(user: User | number) {
+    const userId = typeof user === 'number' ? user : user.id;
+    return this.user.id === userId;
+  }
 }

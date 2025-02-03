@@ -23,4 +23,9 @@ export class Thread extends BaseEntity {
 
   @OneToMany(() => File, (file) => file.thread, { lazy: true })
   files: Promise<File[]>;
+
+  isAuthorBy(user: User | number): boolean {
+    const userId = typeof user === 'number' ? user : user.id;
+    return this.user.id === userId;
+  }
 }

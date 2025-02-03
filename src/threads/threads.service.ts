@@ -27,8 +27,7 @@ export class ThreadsService {
     }
 
     const thread = this.threadRepository.create({
-      title: createThreadDto.title,
-      content: createThreadDto.content,
+      ...createThreadDto,
       user,
     });
 
@@ -75,7 +74,7 @@ export class ThreadsService {
       throw new NotFoundException(`Thread with id ${id} not found`);
     }
 
-    if (thread.user.id !== authorId) {
+    if (!thread.isAuthorBy(authorId)) {
       throw new ForbiddenException('You are not allowed to update this thread');
     }
 
@@ -91,7 +90,7 @@ export class ThreadsService {
       throw new NotFoundException(`Thread with id ${id} not found`);
     }
 
-    if (thread.user.id !== authorId) {
+    if (!thread.isAuthorBy(authorId)) {
       throw new ForbiddenException('You are not allowed to delete this thread');
     }
 
@@ -107,6 +106,6 @@ export class ThreadsService {
       where: { id: threadId },
     });
 
-    return thread.user.id === userId;
+    return thread?.isAuthorBy(userId);
   }
 }
