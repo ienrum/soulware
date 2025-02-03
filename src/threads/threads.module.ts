@@ -9,6 +9,6 @@ import { UsersModule } from 'src/users/users.module';
   imports: [TypeOrmModule.forFeature([Thread]), UsersModule],
   controllers: [ThreadsController],
   providers: [ThreadsService],
-  exports: [ThreadsService],
+  exports: [ThreadsService, TypeOrmModule, UsersModule],
 })
 export class ThreadsModule {}

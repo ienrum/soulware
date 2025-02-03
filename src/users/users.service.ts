@@ -15,8 +15,14 @@ export class UsersService {
   }
 
   findOne(userId: number): Promise<User> {
-    return this.usersRepository.findOneBy({
+    const user = this.usersRepository.findOneBy({
       id: userId,
     });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    return user;
   }
 }

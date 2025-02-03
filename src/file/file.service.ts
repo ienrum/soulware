@@ -9,14 +9,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 
 import { File } from './entities/file.entity';
-import { Thread } from 'src/threads/entities/thread.entity';
 import { FileApiService } from '../file-api/file-api.service';
+import { ThreadsService } from '../threads/threads.service';
 
 @Injectable()
 export class FileService {
   constructor(
     @InjectRepository(File) private fileRepository: Repository<File>,
-    @InjectRepository(Thread) private threadRepository: Repository<Thread>,
+    private readonly threadsService: ThreadsService,
     private readonly fileApiService: FileApiService,
   ) {}
   async uploadFiles(
@@ -33,13 +33,7 @@ export class FileService {
       this.fileApiService.checkFileExist(file.path);
     }
 
-    const thread = await this.threadRepository.findOne({
-      where: { id: threadId },
-    });
-
-    if (!thread) {
-      throw new NotFoundException('Thread not found');
-    }
+    const thread = await this.threadsService.findOne(threadId);
 
     if (!thread.isAuthorBy(userId)) {
       throw new BadRequestException('You are not the owner of this thread');
@@ -74,7 +68,7 @@ export class FileService {
     });
   }
 
-  async downloadFile(id: number) {
+  async getAndCheckFile(id: number) {
     const file = await this.fileRepository.findOne({
       where: {
         id,

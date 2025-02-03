@@ -10,14 +10,14 @@ import { CreateCommentDto } from './dtos/create-comment.dto';
 import { UsersService } from 'src/users/users.service';
 import { Thread } from 'src/threads/entities/thread.entity';
 import { UpdateCommentDto } from 'src/comments/dtos/update-comment.dto';
+import { ThreadsService } from '../threads/threads.service';
 
 @Injectable()
 export class CommentsService {
   constructor(
     @InjectRepository(Comment)
     private readonly commentsRepository: Repository<Comment>,
-    @InjectRepository(Thread)
-    private readonly threadsRepository: Repository<Thread>,
+    private readonly threadsService: ThreadsService,
     private readonly usersService: UsersService,
   ) {}
 
@@ -29,15 +29,7 @@ export class CommentsService {
   }
 
   async findOne(commentId: number) {
-    const comment = await this.commentsRepository.findOne({
-      where: { id: commentId },
-    });
-
-    if (!comment) {
-      throw new NotFoundException(`Comment with id ${commentId} not found`);
-    }
-
-    return comment;
+    return await this.findCommentById(commentId);
   }
 
   async create(
@@ -46,17 +38,7 @@ export class CommentsService {
     createCommentDto: CreateCommentDto,
   ) {
     const user = await this.usersService.findOne(userId);
-    if (!user) {
-      throw new NotFoundException(`User with id ${userId} not found`);
-    }
-
-    const thread = await this.threadsRepository.findOne({
-      where: { id: threadId },
-    });
-
-    if (!thread) {
-      throw new NotFoundException(`Thread with id ${threadId} not found`);
-    }
+    const thread = await this.threadsService.findOne(threadId);
 
     const comment = this.commentsRepository.create({
       content: createCommentDto.content,
@@ -77,13 +59,7 @@ export class CommentsService {
     commentId: number,
     updateCommentDto: UpdateCommentDto,
   ) {
-    const comment = await this.commentsRepository.findOne({
-      where: { id: commentId },
-    });
-
-    if (!comment) {
-      throw new NotFoundException(`Comment with id ${commentId} not found`);
-    }
+    const comment = await this.findCommentById(commentId);
 
     if (!comment.isAuthorBy(userId)) {
       throw new NotFoundException('You are not allowed to update this comment');
@@ -99,13 +75,7 @@ export class CommentsService {
   }
 
   async delete(userId: number, commentId: number) {
-    const comment = await this.commentsRepository.findOne({
-      where: { id: commentId },
-    });
-
-    if (!comment) {
-      throw new NotFoundException(`Comment with id ${commentId} not found`);
-    }
+    const comment = await this.findCommentById(commentId);
 
     if (!comment.isAuthorBy(userId)) {
       throw new NotFoundException('You are not allowed to delete this comment');
@@ -116,5 +86,17 @@ export class CommentsService {
     if (result.affected === 0) {
       throw new InternalServerErrorException('Failed to delete comment');
     }
+  }
+
+  private async findCommentById(commentId: number) {
+    const comment = await this.commentsRepository.findOne({
+      where: { id: commentId },
+    });
+
+    if (!comment) {
+      throw new NotFoundException(`Comment with id ${commentId} not found`);
+    }
+
+    return comment;
   }
 }

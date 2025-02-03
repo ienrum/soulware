@@ -79,7 +79,7 @@ export class FileController {
     @Param('id', ParseIntPipe) id: number,
     @Res() response: Response,
   ) {
-    const file = await this.fileService.downloadFile(id);
+    const file = await this.fileService.getAndCheckFile(id);
 
     return response.download(file.path, file.name);
   }
