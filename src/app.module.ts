@@ -11,7 +11,6 @@ import { AuthModule } from './auth/auth.module';
 import { APP_PIPE } from '@nestjs/core';
 import { CommentsModule } from './comments/comments.module';
 import { Comment } from 'src/comments/entities/comment.entity';
-import { FileController } from './file/file.controller';
 import { FileModule } from './file/file.module';
 import { File } from 'src/file/entities/file.entity';
 import { FileApiService } from './file-api/file-api.service';
