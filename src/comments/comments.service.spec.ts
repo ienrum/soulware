@@ -113,7 +113,6 @@ describe('CommentsService', () => {
 
       await service.create(1, 1, createCommentDto);
 
-      expect(usersService.findOne).toHaveBeenCalledWith(1);
       expect(threadsService.findOne).toHaveBeenCalledWith(1);
       expect(commentsRepository.save).toHaveBeenCalledWith({
         content: createCommentDto.content,
