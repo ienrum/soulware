@@ -1,7 +1,6 @@
 import {
   ConflictException,
   ForbiddenException,
-  HttpException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -50,8 +49,6 @@ export class AuthService {
 
     const secret = this.configService.get<string>('SECRET');
 
-    const token = jwt.sign({ id: user.id }, secret, { expiresIn: '365d' });
-
-    return token;
+    return jwt.sign({ id: user.id }, secret, { expiresIn: '365d' });
   }
 }

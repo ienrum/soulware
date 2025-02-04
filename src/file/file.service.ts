@@ -9,14 +9,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 
 import { File } from './entities/file.entity';
-import { Thread } from 'src/threads/entities/thread.entity';
 import { FileApiService } from '../file-api/file-api.service';
+import { ThreadsService } from '../threads/threads.service';
 
 @Injectable()
 export class FileService {
   constructor(
     @InjectRepository(File) private fileRepository: Repository<File>,
-    @InjectRepository(Thread) private threadRepository: Repository<Thread>,
+    private readonly threadsService: ThreadsService,
     private readonly fileApiService: FileApiService,
   ) {}
   async uploadFiles(
@@ -33,15 +33,9 @@ export class FileService {
       this.fileApiService.checkFileExist(file.path);
     }
 
-    const thread = await this.threadRepository.findOne({
-      where: { id: threadId },
-    });
+    const thread = await this.threadsService.findOne(threadId);
 
-    if (!thread) {
-      throw new NotFoundException('Thread not found');
-    }
-
-    if (thread.user.id !== userId) {
+    if (!thread.isAuthorBy(userId)) {
       throw new BadRequestException('You are not the owner of this thread');
     }
 
@@ -64,22 +58,17 @@ export class FileService {
   }
 
   async getFiles(threadId: number) {
-    const files = await this.fileRepository.find({
+    return await this.fileRepository.find({
       where: {
         thread: {
           id: threadId,
         },
       },
+      relations: ['thread'],
     });
-
-    if (!files) {
-      throw new NotFoundException('Files not found');
-    }
-
-    return files;
   }
 
-  async downloadFile(id: number) {
+  async getAndCheckFileExist(id: number) {
     const file = await this.fileRepository.findOne({
       where: {
         id,

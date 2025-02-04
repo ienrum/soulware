@@ -69,9 +69,9 @@ export class FileController {
     @GetUserId() userId: number,
   ) {
     const fileList = await this.fileService.getFiles(threadId);
-    const isAuthor = await this.threadsService.isAuthor(threadId, userId);
+    await this.threadsService.getAndCheckIsAuthor(threadId, userId);
 
-    return new FileListResponseDto(fileList, isAuthor);
+    return new FileListResponseDto(fileList, true);
   }
 
   @Get('download/:id')
@@ -79,7 +79,7 @@ export class FileController {
     @Param('id', ParseIntPipe) id: number,
     @Res() response: Response,
   ) {
-    const file = await this.fileService.downloadFile(id);
+    const file = await this.fileService.getAndCheckFileExist(id);
 
     return response.download(file.path, file.name);
   }
@@ -91,12 +91,7 @@ export class FileController {
     @GetUserId() userId: number,
     @Body() dto: FileDeleteDto,
   ) {
-    const isAuthor = await this.threadsService.isAuthor(threadId, userId);
-
-    if (!isAuthor) {
-      throw new ForbiddenException('You are not the owner of this thread');
-    }
-
+    await this.threadsService.getAndCheckIsAuthor(threadId, userId);
     await this.fileService.deleteFiles(dto.ids);
 
     return 'Files deleted successfully';

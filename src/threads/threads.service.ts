@@ -22,33 +22,17 @@ export class ThreadsService {
 
   async create(userid: number, createThreadDto: CreateThreadDto) {
     const user = await this.usersService.findOne(userid);
-    if (!user) {
-      throw new NotFoundException(`User with id ${userid} not found`);
-    }
 
     const thread = this.threadRepository.create({
-      title: createThreadDto.title,
-      content: createThreadDto.content,
+      ...createThreadDto,
       user,
     });
 
-    const result = await this.threadRepository.save(thread);
-
-    if (!result) {
-      throw new InternalServerErrorException('Failed to create thread');
-    }
+    await this.threadRepository.save(thread);
   }
 
   async findOne(id: number) {
-    const thread = await this.threadRepository.findOne({
-      where: { id },
-    });
-
-    if (!thread) {
-      throw new NotFoundException(`Thread with id ${id} not found`);
-    }
-
-    return thread;
+    return await this.getThreadById(id);
   }
 
   async findAll(page?: number, limit?: number, search?: string) {
@@ -67,33 +51,12 @@ export class ThreadsService {
   }
 
   async update(id: number, UpdateThreadDto: UpdateThreadDto, authorId: number) {
-    const thread = await this.threadRepository.findOne({
-      where: { id },
-    });
-
-    if (!thread) {
-      throw new NotFoundException(`Thread with id ${id} not found`);
-    }
-
-    if (thread.user.id !== authorId) {
-      throw new ForbiddenException('You are not allowed to update this thread');
-    }
-
+    await this.getAndCheckIsAuthor(id, authorId);
     await this.threadRepository.update(id, UpdateThreadDto);
   }
 
   async delete(id: number, authorId: number) {
-    const thread = await this.threadRepository.findOne({
-      where: { id },
-    });
-
-    if (!thread) {
-      throw new NotFoundException(`Thread with id ${id} not found`);
-    }
-
-    if (thread.user.id !== authorId) {
-      throw new ForbiddenException('You are not allowed to delete this thread');
-    }
+    await this.getAndCheckIsAuthor(id, authorId);
 
     const result = await this.threadRepository.delete(id);
 
@@ -102,11 +65,25 @@ export class ThreadsService {
     }
   }
 
-  async isAuthor(threadId: number, userId: number) {
+  async getAndCheckIsAuthor(threadId: number, userId: number) {
+    const thread = await this.getThreadById(threadId);
+
+    if (!thread.isAuthorBy(userId)) {
+      throw new ForbiddenException('You are not allowed to update this thread');
+    }
+
+    return thread;
+  }
+
+  private async getThreadById(threadId: number) {
     const thread = await this.threadRepository.findOne({
       where: { id: threadId },
     });
 
-    return thread.user.id === userId;
+    if (!thread) {
+      throw new NotFoundException('Thread not found');
+    }
+
+    return thread;
   }
 }
