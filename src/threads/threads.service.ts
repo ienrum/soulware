@@ -52,7 +52,11 @@ export class ThreadsService {
 
   async update(id: number, UpdateThreadDto: UpdateThreadDto, authorId: number) {
     await this.getAndCheckIsAuthor(id, authorId);
-    await this.threadRepository.update(id, UpdateThreadDto);
+    const result = await this.threadRepository.update(id, UpdateThreadDto);
+
+    if (result.affected === 0) {
+      throw new InternalServerErrorException('Failed to update thread');
+    }
   }
 
   async delete(id: number, authorId: number) {
