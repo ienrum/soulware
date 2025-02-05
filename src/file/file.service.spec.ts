@@ -111,14 +111,14 @@ describe('FileService', () => {
       await service.uploadFiles(fakeFiles, 1, 1);
 
       expect(fileApiService.checkFileExist).toHaveBeenCalledWith(
-        fakeFiles[0].path,
+        fakeFiles[0]!.path,
       );
       expect(threadsService.findOne).toHaveBeenCalledWith(1);
       expect(fileRepository.create).toHaveBeenCalledWith({
-        name: fakeFiles[0].filename,
-        originalName: fakeFiles[0].originalname,
-        path: fakeFiles[0].path,
-        size: fakeFiles[0].size,
+        name: fakeFiles[0]!.filename,
+        originalName: fakeFiles[0]!.originalname,
+        path: fakeFiles[0]!.path,
+        size: fakeFiles[0]!.size,
         threadId: 1,
         userId: 1,
       });
