@@ -15,7 +15,10 @@ export class Thread extends BaseEntity {
   @Column({ name: 'view_count', default: 0 })
   viewCount: number;
 
-  @ManyToOne(() => User, (user) => user.threads, { eager: true })
+  @ManyToOne(() => User, (user) => user.threads, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   user: User;
 
   @OneToMany(() => Comment, (comment) => comment.thread, { lazy: true })
