@@ -1,7 +1,6 @@
 import { Exclude, Expose, Type } from 'class-transformer';
 import { File } from 'src/file/entities/file.entity';
 import { Thread } from 'src/threads/entities/thread.entity';
-import { User } from '../../users/entities/User.entity';
 
 class FileResponseDto extends File {
   id: number;
@@ -27,9 +26,9 @@ class FileResponseDto extends File {
 }
 
 export class FileListResponseDto {
-  constructor(files: File[], isAuthor: boolean) {
+  constructor(files: File[], userId?: number) {
     this.files = files.map((file) => new FileResponseDto(file));
-    this.isAuthor = isAuthor;
+    this.isAuthor = files[0]?.isAuthorBy(userId) || false;
   }
 
   isAuthor: boolean;

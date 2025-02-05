@@ -10,6 +10,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { Readable } from 'typeorm/platform/PlatformTools';
 
 describe('FileService', () => {
   let service: FileService;
@@ -85,12 +86,12 @@ describe('FileService', () => {
         path: '/uploads/test-file.jpg',
         size: 12345,
         buffer: Buffer.from([]),
-        stream: null,
+        stream: new Readable(),
       },
     ];
 
     it('should throw BadRequestException if no files are provided', async () => {
-      await expect(service.uploadFiles(null, 1, 1)).rejects.toThrow(
+      await expect(service.uploadFiles([], 1, 1)).rejects.toThrow(
         BadRequestException,
       );
     });
@@ -110,14 +111,14 @@ describe('FileService', () => {
       await service.uploadFiles(fakeFiles, 1, 1);
 
       expect(fileApiService.checkFileExist).toHaveBeenCalledWith(
-        fakeFiles[0].path,
+        fakeFiles[0]!.path,
       );
       expect(threadsService.findOne).toHaveBeenCalledWith(1);
       expect(fileRepository.create).toHaveBeenCalledWith({
-        name: fakeFiles[0].filename,
-        originalName: fakeFiles[0].originalname,
-        path: fakeFiles[0].path,
-        size: fakeFiles[0].size,
+        name: fakeFiles[0]!.filename,
+        originalName: fakeFiles[0]!.originalname,
+        path: fakeFiles[0]!.path,
+        size: fakeFiles[0]!.size,
         threadId: 1,
         userId: 1,
       });

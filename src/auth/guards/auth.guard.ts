@@ -12,6 +12,9 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
+      if (!process.env.SECRET) {
+        throw new UnauthorizedException('Secret key not defined');
+      }
       const payload = jwt.verify(token, process.env.SECRET);
 
       request.user = payload;

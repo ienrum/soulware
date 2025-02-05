@@ -12,10 +12,9 @@ import { BaseResponseDto } from '../base-response.dto';
 export class AllExceptionsFilter implements ExceptionFilter {
   private logger = new Logger('AllExceptionsFilter');
 
-  catch(exception: unknown, host: ArgumentsHost) {
+  catch(exception: Error, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
-    const request = ctx.getRequest();
 
     const status =
       exception instanceof HttpException
@@ -27,7 +26,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
         ? exception.message
         : 'Internal server error';
 
-    this.logger.error(`Status: ${status} Error: ${JSON.stringify(message)}`);
+    this.logger.error(
+      `Status: ${status} Error: ${JSON.stringify(exception.message)}`,
+    );
 
     const baseResponse = new BaseResponseDto(status, message, null);
 

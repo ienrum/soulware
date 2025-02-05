@@ -16,8 +16,11 @@ describe('AuthService', () => {
       create: jest.fn().mockImplementation((user) => {
         return Promise.resolve({ id: 1, ...user });
       }),
-      findOne: jest.fn().mockImplementation((id) => {
+      findOneById: jest.fn().mockImplementation((id) => {
         return Promise.resolve({ id, name: 'Test User' });
+      }),
+      findOneByName: jest.fn().mockImplementation((name) => {
+        return Promise.resolve({ id: 1, name });
       }),
     };
 
@@ -51,7 +54,7 @@ describe('AuthService', () => {
 
       await service.signUp(userDto);
 
-      const createdUser = usersService.create.mock.calls[0][0];
+      const createdUser = usersService.create?.mock.calls[0][0];
       const isPasswordHashed = await bcrypt.compare(
         userDto.password,
         createdUser.password,
@@ -78,7 +81,7 @@ describe('AuthService', () => {
         password: 'password',
       };
 
-      usersService.findOne = jest.fn().mockResolvedValue({
+      usersService.findOneByName = jest.fn().mockResolvedValue({
         id: 1,
         name: userDto.name,
         password: await bcrypt.hash(userDto.password, saltRounds),
@@ -95,7 +98,7 @@ describe('AuthService', () => {
         password: 'password',
       };
 
-      usersService.findOne = jest.fn().mockResolvedValue(null);
+      usersService.findOneById = jest.fn().mockResolvedValue(null);
 
       await expect(service.signIn(userDto)).rejects.toThrow();
     });
@@ -106,7 +109,7 @@ describe('AuthService', () => {
         password: 'password',
       };
 
-      usersService.findOne = jest.fn().mockResolvedValue({
+      usersService.findOneById = jest.fn().mockResolvedValue({
         id: 1,
         name: 'Test User',
         password: 'hashedPasswordButNotTheSame',

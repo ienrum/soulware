@@ -20,8 +20,9 @@ export class Comment extends BaseEntity {
   })
   thread: Promise<Thread>;
 
-  isAuthorBy(user: User | number) {
-    const userId = typeof user === 'number' ? user : user.id;
+  isAuthorBy(option: User | number | undefined): boolean {
+    const userId = option instanceof User ? option.id : option;
+
     return this.user.id === userId;
   }
 }

@@ -2,7 +2,6 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
-  ForbiddenException,
   Get,
   Param,
   ParseIntPipe,
@@ -66,12 +65,11 @@ export class FileController {
   @Get(':threadId')
   async getFiles(
     @Param('threadId', ParseIntPipe) threadId: number,
-    @GetUserId() userId: number,
+    @GetUserId() userId?: number,
   ) {
     const fileList = await this.fileService.getFiles(threadId);
-    await this.threadsService.getAndCheckIsAuthor(threadId, userId);
 
-    return new FileListResponseDto(fileList, true);
+    return new FileListResponseDto(fileList, userId);
   }
 
   @Get('download/:id')
@@ -88,8 +86,8 @@ export class FileController {
   @Post(':threadId/delete')
   async deleteFiles(
     @Param('threadId', ParseIntPipe) threadId: number,
-    @GetUserId() userId: number,
     @Body() dto: FileDeleteDto,
+    @GetUserId() userId?: number,
   ) {
     await this.threadsService.getAndCheckIsAuthor(threadId, userId);
     await this.fileService.deleteFiles(dto.ids);

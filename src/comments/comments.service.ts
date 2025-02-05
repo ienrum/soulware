@@ -36,7 +36,7 @@ export class CommentsService {
     threadId: number,
     createCommentDto: CreateCommentDto,
   ) {
-    const user = await this.usersService.findOne({ id: userId });
+    const user = await this.usersService.findOneById(userId);
     const thread = await this.threadsService.findOne(threadId);
 
     const comment = this.commentsRepository.create({

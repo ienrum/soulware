@@ -27,7 +27,7 @@ export class AuthController {
 
   @UseInterceptors(ClearJwtTokenInterceptor)
   @Post('signout')
-  signOut(e) {}
+  signOut() {}
 
   @UseInterceptors(CheckAuthorizedInterceptor)
   @Get('me')

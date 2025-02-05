@@ -57,7 +57,7 @@ describe('CommentsService', () => {
     };
 
     usersService = {
-      findOne: jest.fn().mockResolvedValue(mockUser),
+      findOneById: jest.fn().mockResolvedValue(mockUser),
     };
 
     const module: TestingModule = await Test.createTestingModule({

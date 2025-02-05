@@ -17,7 +17,7 @@ export class CommentResponseDto {
   createdAt: Date;
   updatedAt: Date;
   isAuthor: boolean;
-  constructor(comment: Comment, myId: number) {
+  constructor(comment: Comment, myId?: number) {
     this.isAuthor = comment.isAuthorBy(myId);
     Object.assign(this, comment);
   }
@@ -27,7 +27,7 @@ export class CommentResponseDto {
 }
 
 export class CommentListResponseDto {
-  constructor(comments: Comment[], myId: number) {
+  constructor(comments: Comment[], myId?: number) {
     this.comments = comments.map(
       (comment) => new CommentResponseDto(comment, myId),
     );

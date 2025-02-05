@@ -29,7 +29,7 @@ export class CommentsController {
   @Get()
   async findAllForThread(
     @Param('threadId', ParseIntPipe) threadId: number,
-    @GetUserId() userId: number,
+    @GetUserId() userId?: number,
   ) {
     const comments = await this.commentsService.findAllForThread(threadId);
 
@@ -39,7 +39,7 @@ export class CommentsController {
   @Get(':commentId')
   async findOne(
     @Param('commentId', ParseIntPipe) commentId: number,
-    @GetUserId() userId: number,
+    @GetUserId() userId?: number,
   ) {
     const comment = await this.commentsService.findOne(commentId);
 
@@ -49,9 +49,9 @@ export class CommentsController {
   @UseGuards(AuthGuard)
   @Post()
   async create(
-    @GetUserId() userId: number,
     @Param('threadId', ParseIntPipe) threadId: number,
     @Body() createCommentDto: CreateCommentDto,
+    @GetUserId() userId: number,
   ) {
     await this.commentsService.create(userId, threadId, createCommentDto);
 
@@ -61,9 +61,9 @@ export class CommentsController {
   @UseGuards(AuthGuard)
   @Put(':commentId')
   async update(
-    @GetUserId() userId: number,
     @Param('commentId', ParseIntPipe) commentId: number,
     @Body() updateCommentDto: UpdateCommentDto,
+    @GetUserId() userId: number,
   ) {
     await this.commentsService.update(userId, commentId, updateCommentDto);
 
@@ -73,8 +73,8 @@ export class CommentsController {
   @UseGuards(AuthGuard)
   @Delete(':commentId')
   async delete(
-    @GetUserId() userId: number,
     @Param('commentId', ParseIntPipe) commentId: number,
+    @GetUserId() userId: number,
   ) {
     await this.commentsService.delete(userId, commentId);
 

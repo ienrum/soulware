@@ -62,7 +62,10 @@ describe('ThreadsService', () => {
     };
 
     usersService = {
-      findOne: jest.fn().mockImplementation(() => {
+      findOneById: jest.fn().mockImplementation(() => {
+        return Promise.resolve({ id: 1 });
+      }),
+      findOneByName: jest.fn().mockImplementation(() => {
         return Promise.resolve({ id: 1 });
       }),
     };
@@ -93,7 +96,7 @@ describe('ThreadsService', () => {
       };
 
       await service.create(1, threadDto);
-      expect(usersService.findOne).toHaveBeenCalledWith(1);
+      expect(usersService.findOneById).toHaveBeenCalledWith(1);
       expect(threadsRepository.create).toHaveBeenCalledWith(
         expect.objectContaining(threadDto),
       );
