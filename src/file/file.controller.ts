@@ -68,9 +68,8 @@ export class FileController {
     @GetUserId() userId?: number,
   ) {
     const fileList = await this.fileService.getFiles(threadId);
-    await this.threadsService.getAndCheckIsAuthor(threadId, userId);
 
-    return new FileListResponseDto(fileList, true);
+    return new FileListResponseDto(fileList, userId);
   }
 
   @Get('download/:id')

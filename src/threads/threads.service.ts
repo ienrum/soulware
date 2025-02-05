@@ -37,7 +37,7 @@ export class ThreadsService {
   }
 
   async findOne(id: number) {
-    return await this.getThreadById(id);
+    return await this.getById(id);
   }
 
   async findAll(page?: number, limit?: number, search?: string) {
@@ -75,7 +75,7 @@ export class ThreadsService {
   }
 
   async getAndCheckIsAuthor(threadId: number, userId?: number) {
-    const thread = await this.getThreadById(threadId);
+    const thread = await this.getById(threadId);
 
     if (!thread.isAuthorBy(userId)) {
       throw new ForbiddenException('You are not allowed to update this thread');
@@ -84,7 +84,7 @@ export class ThreadsService {
     return thread;
   }
 
-  private async getThreadById(threadId: number) {
+  private async getById(threadId: number) {
     const thread = await this.threadRepository.findOne({
       where: { id: threadId },
     });
