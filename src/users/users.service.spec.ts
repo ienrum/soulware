@@ -40,7 +40,7 @@ describe('UsersService', () => {
 
   describe('findOne', () => {
     it('should return a user', async () => {
-      const user = await service.findOne(1);
+      const user = await service.findOneById(1);
       expect(user).toEqual(mockUser);
       expect(usersRepository.findOneBy).toHaveBeenCalledWith({ id: 1 });
     });
@@ -51,7 +51,7 @@ describe('UsersService', () => {
       });
 
       try {
-        await service.findOne(1);
+        await service.findOneById(1);
       } catch (error) {
         expect(error).toBeInstanceOf(NotFoundException);
       }

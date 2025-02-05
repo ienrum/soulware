@@ -31,8 +31,8 @@ export class ThreadsController {
   @UseGuards(AuthGuard)
   @Post()
   async create(
-    @GetUserId() userid: number,
     @Body() createThreadDto: CreateThreadDto,
+    @GetUserId() userid: number,
   ) {
     await this.threadsService.create(userid, createThreadDto);
 
@@ -67,7 +67,7 @@ export class ThreadsController {
   @Get(':id')
   async findOne(
     @Param('id', ParseIntPipe) id: number,
-    @GetUserId() userid: number,
+    @GetUserId() userid?: number,
   ): Promise<ThreadResponseDto> {
     const thread = await this.threadsService.findOne(id);
 

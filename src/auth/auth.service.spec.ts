@@ -8,7 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 
 describe('AuthService', () => {
   let service: AuthService;
-  let usersService: Partial<Record<keyof UsersService, jest.Mock>>;
+  let usersService: jest.Mocked<UsersService>;
   let saltRounds: number;
 
   beforeEach(async () => {
@@ -19,7 +19,7 @@ describe('AuthService', () => {
       findOne: jest.fn().mockImplementation((id) => {
         return Promise.resolve({ id, name: 'Test User' });
       }),
-    };
+    } as unknown as jest.Mocked<UsersService>;
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [
@@ -78,7 +78,7 @@ describe('AuthService', () => {
         password: 'password',
       };
 
-      usersService.findOne = jest.fn().mockResolvedValue({
+      usersService.findOneById = jest.fn().mockResolvedValue({
         id: 1,
         name: userDto.name,
         password: await bcrypt.hash(userDto.password, saltRounds),
@@ -95,7 +95,7 @@ describe('AuthService', () => {
         password: 'password',
       };
 
-      usersService.findOne = jest.fn().mockResolvedValue(null);
+      usersService.findOneById = jest.fn().mockResolvedValue(null);
 
       await expect(service.signIn(userDto)).rejects.toThrow();
     });
@@ -106,7 +106,7 @@ describe('AuthService', () => {
         password: 'password',
       };
 
-      usersService.findOne = jest.fn().mockResolvedValue({
+      usersService.findOneById = jest.fn().mockResolvedValue({
         id: 1,
         name: 'Test User',
         password: 'hashedPasswordButNotTheSame',

@@ -21,10 +21,15 @@ export class ThreadsService {
   private readonly MAX_LIMIT = 4;
 
   async create(userid: number, createThreadDto: CreateThreadDto) {
-    const user = await this.usersService.findOne(userid);
+    const user = await this.usersService.findOneById(userid);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
 
     const thread = this.threadRepository.create({
-      ...createThreadDto,
+      title: createThreadDto.title,
+      content: createThreadDto.content,
       user,
     });
 
@@ -41,7 +46,7 @@ export class ThreadsService {
     const threads = await this.threadRepository.find({
       where: { title: Like(`%${search || ''}%`) },
       take: limit || this.MAX_LIMIT,
-      skip: (page - 1) * this.MAX_LIMIT || 0,
+      skip: (page ?? 1 - 1) * this.MAX_LIMIT || 0,
       order: { createdAt: 'DESC' },
     });
 
@@ -69,7 +74,7 @@ export class ThreadsService {
     }
   }
 
-  async getAndCheckIsAuthor(threadId: number, userId: number) {
+  async getAndCheckIsAuthor(threadId: number, userId?: number) {
     const thread = await this.getThreadById(threadId);
 
     if (!thread.isAuthorBy(userId)) {

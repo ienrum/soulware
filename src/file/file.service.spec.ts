@@ -10,6 +10,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { Readable } from 'typeorm/platform/PlatformTools';
 
 describe('FileService', () => {
   let service: FileService;
@@ -85,12 +86,12 @@ describe('FileService', () => {
         path: '/uploads/test-file.jpg',
         size: 12345,
         buffer: Buffer.from([]),
-        stream: null,
+        stream: new Readable(),
       },
     ];
 
     it('should throw BadRequestException if no files are provided', async () => {
-      await expect(service.uploadFiles(null, 1, 1)).rejects.toThrow(
+      await expect(service.uploadFiles([], 1, 1)).rejects.toThrow(
         BadRequestException,
       );
     });

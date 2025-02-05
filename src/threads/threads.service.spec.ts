@@ -15,7 +15,7 @@ import {
 
 describe('ThreadsService', () => {
   let service: ThreadsService;
-  let usersService: Partial<Record<keyof UsersService, jest.Mock>>;
+  let usersService: jest.Mocked<UsersService>;
   let threadsRepository: Partial<Record<keyof Repository<Thread>, jest.Mock>>;
 
   const mockUser: Partial<User> = {
@@ -65,7 +65,7 @@ describe('ThreadsService', () => {
       findOne: jest.fn().mockImplementation(() => {
         return Promise.resolve({ id: 1 });
       }),
-    };
+    } as unknown as jest.Mocked<UsersService>;
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -93,7 +93,7 @@ describe('ThreadsService', () => {
       };
 
       await service.create(1, threadDto);
-      expect(usersService.findOne).toHaveBeenCalledWith(1);
+      expect(usersService.findOneById).toHaveBeenCalledWith(1);
       expect(threadsRepository.create).toHaveBeenCalledWith(
         expect.objectContaining(threadDto),
       );

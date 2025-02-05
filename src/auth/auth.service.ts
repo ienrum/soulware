@@ -1,5 +1,4 @@
 import {
-  ConflictException,
   ForbiddenException,
   Inject,
   Injectable,
@@ -29,17 +28,13 @@ export class AuthService {
       password: hashedPassword,
     };
 
-    try {
-      await this.usersService.create(signupDto);
-    } catch (error) {
-      throw new ConflictException('User already exists');
-    }
+    await this.usersService.create(signupDto);
   }
 
   async signIn(userSignInDto: UserSignInDto) {
     const { name, password } = userSignInDto;
 
-    const user = await this.usersService.findOne({ name });
+    const user = await this.usersService.findOneByName(name);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -50,6 +45,10 @@ export class AuthService {
     }
 
     const secret = this.configService.get<string>('SECRET');
+
+    if (!secret) {
+      throw new Error('No secret found');
+    }
 
     return jwt.sign({ id: user.id }, secret, { expiresIn: '365d' });
   }
