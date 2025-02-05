@@ -15,8 +15,8 @@ import {
 describe('CommentsService', () => {
   let service: CommentsService;
   let commentsRepository: Partial<Record<keyof Repository<Comment>, jest.Mock>>;
-  let threadsService: jest.Mocked<ThreadsService>;
-  let usersService: jest.Mocked<UsersService>;
+  let threadsService: Partial<Record<keyof ThreadsService, jest.Mock>>;
+  let usersService: Partial<Record<keyof UsersService, jest.Mock>>;
 
   const mockUser = {
     id: 1,
@@ -54,11 +54,11 @@ describe('CommentsService', () => {
 
     threadsService = {
       findOne: jest.fn().mockResolvedValue(mockThread),
-    } as unknown as jest.Mocked<ThreadsService>;
+    };
 
     usersService = {
-      findOne: jest.fn().mockResolvedValue(mockUser),
-    } as unknown as jest.Mocked<UsersService>;
+      findOneById: jest.fn().mockResolvedValue(mockUser),
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
