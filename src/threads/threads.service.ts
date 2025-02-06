@@ -39,7 +39,7 @@ export class ThreadsService {
     const totalThreadsCount = await this.threadRepository.count();
 
     const threads = await this.threadRepository.findForPagination(
-      page || 0,
+      page || 1,
       limit || this.MAX_LIMIT,
       search ? search : '',
       'DESC',

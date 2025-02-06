@@ -25,7 +25,7 @@ export class ThreadsRepository {
         'id', "u".id,
         'name', "u".name,
         'password', "u".password
-      ) as "user" from "thread" inner join "user" as "u" on "thread"."user_id" = "u"."id" where "thread"."id" = ${id}`,
+      ) as "user" from "thread" inner join "user" as "u" on "thread"."userId" = "u"."id" where "thread"."id" = ${id}`,
     );
 
     return this.threadsRepository.create(threads)[0];
@@ -47,10 +47,10 @@ export class ThreadsRepository {
           'password', "u".password
         ) as "user"
       from "thread" 
-      inner join "user" as "u" on "thread"."user_id" = "u"."id"
+      inner join "user" as "u" on "thread"."userId" = "u"."id"
       where "thread"."title" like '%${search}%'
-      order by "thread"."created_at" ${createdAt} 
-      limit ${limit} offset ${page * limit}
+      order by "thread"."createdAt" ${createdAt} 
+      limit ${limit} offset ${(page - 1) * limit}
       `,
     );
 
@@ -58,7 +58,11 @@ export class ThreadsRepository {
   }
 
   async count() {
-    return this.threadsRepository.query('select count(*) from "thread"');
+    const result = await this.threadsRepository.query(
+      'select count(*) from "thread"',
+    );
+
+    return parseInt(result[0].count, 10);
   }
 
   async update(
