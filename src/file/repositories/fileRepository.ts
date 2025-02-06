@@ -27,9 +27,9 @@ export class FileRepository {
         'id', "thread".id,
         'title', "thread".title,
         'content', "thread".content,
-        'createdAt', "thread".created_at,
-        'updatedAt', "thread".updated_at,
-        'viewCount', "thread".view_count
+        'createdAt', "thread"."createdAt",
+        'updatedAt', "thread"."updatedAt",
+        'viewCount', "thread"."viewCount"
       ) as "thread"
       from "file" inner join "thread" on "thread"."id" = "file"."threadId"
       where "thread"."id" = ${threadId}`,
