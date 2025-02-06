@@ -21,10 +21,15 @@ export class ThreadsService {
   private readonly MAX_LIMIT = 4;
 
   async create(userid: number, createThreadDto: CreateThreadDto) {
-    const user = await this.usersService.findOne(userid);
+    const user = await this.usersService.findOneById(userid);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
 
     const thread = this.threadRepository.create({
-      ...createThreadDto,
+      title: createThreadDto.title,
+      content: createThreadDto.content,
       user,
     });
 
@@ -32,7 +37,7 @@ export class ThreadsService {
   }
 
   async findOne(id: number) {
-    return await this.getThreadById(id);
+    return await this.getById(id);
   }
 
   async findAll(page?: number, limit?: number, search?: string) {
@@ -41,7 +46,7 @@ export class ThreadsService {
     const threads = await this.threadRepository.find({
       where: { title: Like(`%${search || ''}%`) },
       take: limit || this.MAX_LIMIT,
-      skip: (page - 1) * this.MAX_LIMIT || 0,
+      skip: (page ?? 1 - 1) * this.MAX_LIMIT || 0,
       order: { createdAt: 'DESC' },
     });
 
@@ -69,8 +74,8 @@ export class ThreadsService {
     }
   }
 
-  async getAndCheckIsAuthor(threadId: number, userId: number) {
-    const thread = await this.getThreadById(threadId);
+  async getAndCheckIsAuthor(threadId: number, userId?: number) {
+    const thread = await this.getById(threadId);
 
     if (!thread.isAuthorBy(userId)) {
       throw new ForbiddenException('You are not allowed to update this thread');
@@ -79,7 +84,7 @@ export class ThreadsService {
     return thread;
   }
 
-  private async getThreadById(threadId: number) {
+  private async getById(threadId: number) {
     const thread = await this.threadRepository.findOne({
       where: { id: threadId },
     });

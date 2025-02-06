@@ -1,5 +1,5 @@
 import { Thread } from 'src/threads/entities/thread.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { User } from '../../users/entities/User.entity';
 import { BaseEntity } from '../../common/entities/base.entity';
 
@@ -33,4 +33,10 @@ export class File extends BaseEntity {
     lazy: true,
   })
   user: Promise<User>;
+
+  isAuthorBy(option?: number | User): boolean {
+    const userId = option instanceof User ? option.id : option;
+
+    return this.userId === userId;
+  }
 }

@@ -15,7 +15,10 @@ export class Thread extends BaseEntity {
   @Column({ name: 'view_count', default: 0 })
   viewCount: number;
 
-  @ManyToOne(() => User, (user) => user.threads, { eager: true })
+  @ManyToOne(() => User, (user) => user.threads, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   user: User;
 
   @OneToMany(() => Comment, (comment) => comment.thread, { lazy: true })
@@ -24,8 +27,9 @@ export class Thread extends BaseEntity {
   @OneToMany(() => File, (file) => file.thread, { lazy: true })
   files: Promise<File[]>;
 
-  isAuthorBy(user: User | number): boolean {
-    const userId = typeof user === 'number' ? user : user.id;
+  isAuthorBy(option?: User | number): boolean {
+    const userId = option instanceof User ? option.id : option;
+
     return this.user.id === userId;
   }
 }

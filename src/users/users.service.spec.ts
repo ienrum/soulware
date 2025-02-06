@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from './entities/User.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { NotFoundException } from '@nestjs/common';
+import { UserSignUpDto } from 'src/auth/dto/user-signup.dto';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -17,6 +18,10 @@ describe('UsersService', () => {
 
   beforeEach(async () => {
     usersRepository = {
+      create: jest.fn().mockImplementation((signupDto: UserSignUpDto) => ({
+        id: 1,
+        ...signupDto,
+      })),
       findOneBy: jest.fn().mockImplementation(() => {
         return Promise.resolve(mockUser);
       }),
@@ -40,7 +45,7 @@ describe('UsersService', () => {
 
   describe('findOne', () => {
     it('should return a user', async () => {
-      const user = await service.findOne(1);
+      const user = await service.findOneById(1);
       expect(user).toEqual(mockUser);
       expect(usersRepository.findOneBy).toHaveBeenCalledWith({ id: 1 });
     });
@@ -51,7 +56,7 @@ describe('UsersService', () => {
       });
 
       try {
-        await service.findOne(1);
+        await service.findOneById(1);
       } catch (error) {
         expect(error).toBeInstanceOf(NotFoundException);
       }

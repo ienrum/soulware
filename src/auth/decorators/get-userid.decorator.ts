@@ -4,7 +4,11 @@ import * as jwt from 'jsonwebtoken';
 
 const getPayload = (token: string) => {
   try {
-    return jwt.verify(token, process.env.SECRET) as jwt.JwtPayload;
+    const secret = process.env.SECRET;
+    if (!secret) {
+      throw new Error('SECRET environment variable is not defined');
+    }
+    return jwt.verify(token, secret) as jwt.JwtPayload;
   } catch (e) {
     return null;
   }
