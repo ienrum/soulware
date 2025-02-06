@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Thread } from 'src/threads/entities/thread.entity';
+import { User } from 'src/users/entities/User.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -9,14 +10,15 @@ export class ThreadsRepository {
     @InjectRepository(Thread) private threadsRepository: Repository<Thread>,
   ) {}
 
-  async create(thread: Partial<Thread>): Promise<Thread> {
-    const newThread = this.threadsRepository.create(thread);
+  async create(
+    thread: Partial<Thread>,
+    user: User,
+  ): Promise<Thread | undefined> {
+    const result = await this.threadsRepository.query(
+      `insert into "thread" ("title", "content", "userId") values ('${thread.title}', '${thread.content}', ${user.id}) returning *`,
+    );
 
-    return this.threadsRepository.save(newThread);
-  }
-
-  async save(thread: Thread): Promise<Thread> {
-    return this.threadsRepository.save(thread);
+    return this.threadsRepository.create(result)[0];
   }
 
   async findOneById(id: number): Promise<Thread | undefined> {

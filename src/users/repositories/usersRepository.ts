@@ -10,10 +10,12 @@ export class UsersRepository {
     @InjectRepository(User) private readonly repository: Repository<User>,
   ) {}
 
-  create(userSignUpDto: UserSignUpDto): Promise<User> {
-    const user = this.repository.create(userSignUpDto);
+  async create(userSignUpDto: UserSignUpDto): Promise<User | undefined> {
+    const result = await this.repository.query(
+      `insert into "user" ("name", "password") values ('${userSignUpDto.name}', '${userSignUpDto.password}') returning *`,
+    );
 
-    return this.repository.save(user);
+    return this.repository.create(result)[0];
   }
 
   async findByOneName(name: string): Promise<User> {

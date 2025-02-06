@@ -18,7 +18,13 @@ export class UsersService {
       throw new ConflictException('User already exists');
     }
 
-    return this.usersRepository.create(signUpDto);
+    const newUser = await this.usersRepository.create(signUpDto);
+
+    if (!newUser) {
+      throw new ConflictException('Failed to create user');
+    }
+
+    return newUser;
   }
 
   async findOneByName(name: string): Promise<User> {

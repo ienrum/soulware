@@ -10,14 +10,12 @@ export class FileRepository {
     private readonly fileRepository: Repository<File>,
   ) {}
 
-  create(file: Partial<File>, userId: number, threadId: number) {
-    const newFile = this.fileRepository.create({
-      ...file,
-      userId,
-      threadId,
-    });
+  async create(file: Partial<File>, userId: number, threadId: number) {
+    const newFile = await this.fileRepository.query(
+      `insert into "file" ("name", "originalName", "path", "size", "userId", "threadId") values ('${file.name}', '${file.originalName}', '${file.path}', ${file.size}, ${userId}, ${threadId}) returning *`,
+    );
 
-    return this.fileRepository.save(newFile);
+    return this.fileRepository.create(newFile)[0];
   }
 
   async findByThreadId(threadId: number) {

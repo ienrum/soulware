@@ -24,11 +24,7 @@ export class ThreadsService {
       throw new NotFoundException('User not found');
     }
 
-    await this.threadRepository.create({
-      title: createThreadDto.title,
-      content: createThreadDto.content,
-      user,
-    });
+    await this.threadRepository.create(createThreadDto, user);
   }
 
   async findOne(id: number) {

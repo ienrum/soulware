@@ -12,14 +12,11 @@ export class CommentsRepository {
   ) {}
 
   async create(comment: Partial<Comment>, user: User, thread: Thread) {
-    const newComment = this.repository.create({
-      ...comment,
-      user,
-    });
+    const newComment = await this.repository.query(
+      `insert into "comment" ("content", "userId", "threadId") values ('${comment.content}', ${user.id}, ${thread.id}) returning *`,
+    );
 
-    newComment.thread = Promise.resolve(thread);
-
-    return await this.repository.save(newComment);
+    return this.repository.create(newComment)[0];
   }
 
   async findByThreadId(threadId: number, createdAt: 'ASC' | 'DESC') {
