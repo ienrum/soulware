@@ -23,7 +23,7 @@ export class ThreadsRepository {
     const threads = await this.threadsRepository.query(
       `select "thread".*, json_build_object(
         'id', "u".id,
-        'username', "u".name,
+        'name', "u".name,
         'password', "u".password
       ) as "user" from "thread" inner join "user" as "u" on "thread"."user_id" = "u"."id" where "thread"."id" = ${id}`,
     );
@@ -43,7 +43,7 @@ export class ThreadsRepository {
         "thread".*, 
         json_build_object(
           'id', "u".id,
-          'username', "u".name,
+          'name', "u".name,
           'password', "u".password
         ) as "user"
       from "thread" 

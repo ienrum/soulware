@@ -5,17 +5,15 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
 
-import { File } from './entities/file.entity';
 import { FileApiService } from '../file-api/file-api.service';
 import { ThreadsService } from '../threads/threads.service';
+import { FileRepository } from 'src/file/repositories/fileRepository';
 
 @Injectable()
 export class FileService {
   constructor(
-    @InjectRepository(File) private fileRepository: Repository<File>,
+    private readonly fileRepository: FileRepository,
     private readonly threadsService: ThreadsService,
     private readonly fileApiService: FileApiService,
   ) {}
@@ -40,16 +38,16 @@ export class FileService {
     }
 
     for (const file of files) {
-      const newFile = this.fileRepository.create({
-        name: file.filename,
-        originalName: file.originalname,
-        path: file.path,
-        size: file.size,
-        threadId,
+      const savedFile = await this.fileRepository.create(
+        {
+          name: file.filename,
+          originalName: file.originalname,
+          path: file.path,
+          size: file.size,
+        },
         userId,
-      });
-
-      const savedFile = await this.fileRepository.save(newFile);
+        threadId,
+      );
 
       if (!savedFile) {
         throw new InternalServerErrorException('Failed to save file');
@@ -58,22 +56,11 @@ export class FileService {
   }
 
   async getFiles(threadId: number) {
-    return await this.fileRepository.find({
-      where: {
-        thread: {
-          id: threadId,
-        },
-      },
-      relations: ['thread'],
-    });
+    return await this.fileRepository.findByThreadId(threadId);
   }
 
   async getAndCheckFileExist(id: number) {
-    const file = await this.fileRepository.findOne({
-      where: {
-        id,
-      },
-    });
+    const file = await this.fileRepository.findOneById(id);
 
     if (!file) {
       throw new NotFoundException('File not found');
@@ -89,13 +76,9 @@ export class FileService {
       throw new BadRequestException('ids are empty');
     }
 
-    const files = await this.fileRepository.find({
-      where: {
-        id: In(ids),
-      },
-    });
+    const files = await this.fileRepository.findByIds(ids);
 
-    if (!files) {
+    if (files.length === 0) {
       throw new NotFoundException('File not found');
     }
 
@@ -104,18 +87,20 @@ export class FileService {
     if (deletedFiles.length !== ids.length) {
       const deletedFilesId = deletedFiles.map((file) => file.id);
       const deletedFilesName = deletedFiles.map((file) => file.originalName);
-      await this.fileRepository.delete({
-        id: In(deletedFilesId),
-      });
+      const result = await this.fileRepository.deleteByIds(deletedFilesId);
+
+      if (result.affected === 0) {
+        throw new InternalServerErrorException(
+          `Failed to delete ${deletedFilesName.join(', ')} files`,
+        );
+      }
 
       throw new InternalServerErrorException(
         `Success to delete only ${deletedFilesName.join(', ')} files`,
       );
     }
 
-    const result = await this.fileRepository.delete({
-      id: In(ids),
-    });
+    const result = await this.fileRepository.deleteByIds(ids);
 
     if (result.affected === 0) {
       throw new InternalServerErrorException('Failed to delete file');

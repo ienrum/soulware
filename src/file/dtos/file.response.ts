@@ -26,9 +26,9 @@ class FileResponseDto extends File {
 }
 
 export class FileListResponseDto {
-  constructor(files: File[], userId?: number) {
+  constructor(files: File[], isAuthor: boolean) {
     this.files = files.map((file) => new FileResponseDto(file));
-    this.isAuthor = files[0]?.isAuthorBy(userId) || false;
+    this.isAuthor = isAuthor;
   }
 
   isAuthor: boolean;
