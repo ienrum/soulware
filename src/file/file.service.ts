@@ -25,7 +25,7 @@ export class FileService {
     userId: number,
   ) {
     new Logger().log(JSON.stringify(files));
-    if (!files) {
+    if (files.length === 0) {
       throw new BadRequestException('No file uploaded');
     }
 

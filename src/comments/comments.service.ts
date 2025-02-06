@@ -8,7 +8,6 @@ import { Comment } from 'src/comments/entities/comment.entity';
 import { Repository } from 'typeorm';
 import { CreateCommentDto } from './dtos/create-comment.dto';
 import { UsersService } from 'src/users/users.service';
-import { Thread } from 'src/threads/entities/thread.entity';
 import { UpdateCommentDto } from 'src/comments/dtos/update-comment.dto';
 import { ThreadsService } from '../threads/threads.service';
 
@@ -37,7 +36,7 @@ export class CommentsService {
     threadId: number,
     createCommentDto: CreateCommentDto,
   ) {
-    const user = await this.usersService.findOne(userId);
+    const user = await this.usersService.findOneById(userId);
     const thread = await this.threadsService.findOne(threadId);
 
     const comment = this.commentsRepository.create({

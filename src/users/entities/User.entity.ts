@@ -1,13 +1,7 @@
 import { Thread } from 'src/threads/entities/thread.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
 
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { File } from '../../file/entities/file.entity';
 import { BaseEntity } from '../../common/entities/base.entity';
 

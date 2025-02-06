@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
+import { MockFunctionMetadata, ModuleMocker } from 'jest-mock';
+
+const moduleMocker = new ModuleMocker(global);
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -8,8 +10,15 @@ describe('AuthController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
-      providers: [AuthService],
-    }).compile();
+    })
+      .useMocker((token) => {
+        const mockMetaData = moduleMocker.getMetadata(
+          token,
+        ) as MockFunctionMetadata<any, any>;
+        const Mock = moduleMocker.generateFromMetadata(mockMetaData);
+        return new Mock();
+      })
+      .compile();
 
     controller = module.get<AuthController>(AuthController);
   });

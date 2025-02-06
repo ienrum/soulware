@@ -11,7 +11,6 @@ import { AuthModule } from './auth/auth.module';
 import { APP_PIPE } from '@nestjs/core';
 import { CommentsModule } from './comments/comments.module';
 import { Comment } from 'src/comments/entities/comment.entity';
-import { FileController } from './file/file.controller';
 import { FileModule } from './file/file.module';
 import { File } from 'src/file/entities/file.entity';
 import { FileApiService } from './file-api/file-api.service';
@@ -25,7 +24,7 @@ import { FileApiService } from './file-api/file-api.service';
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT, 10),
+      port: parseInt(process.env.DB_PORT || '5432', 10),
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,

@@ -22,10 +22,10 @@ export class ThreadResponseDto {
 
   @Type(() => Author)
   author: Author;
-  constructor(data: Thread, myId: number) {
-    Object.assign(this, data);
-    this.author = data.user;
-    this.isAuthor = data.user.id === myId;
+  constructor(thread: Thread, myId?: number) {
+    Object.assign(this, thread);
+    this.author = thread.user;
+    this.isAuthor = thread.isAuthorBy(myId);
   }
 
   @Exclude()
