@@ -4,18 +4,15 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { CreateThreadDto } from 'src/threads/dtos/create-thread.dto';
 import { UpdateThreadDto } from 'src/threads/dtos/update-thread.dto';
-import { Thread } from 'src/threads/entities/thread.entity';
+import { ThreadsRepository } from 'src/threads/repositories/threadsRepository';
 import { UsersService } from 'src/users/users.service';
-import { Like, Repository } from 'typeorm';
 
 @Injectable()
 export class ThreadsService {
   constructor(
-    @InjectRepository(Thread)
-    private readonly threadRepository: Repository<Thread>,
+    private readonly threadRepository: ThreadsRepository,
     private readonly usersService: UsersService,
   ) {}
   private readonly MAX_LIMIT = 4;
@@ -27,13 +24,11 @@ export class ThreadsService {
       throw new NotFoundException('User not found');
     }
 
-    const thread = this.threadRepository.create({
+    await this.threadRepository.create({
       title: createThreadDto.title,
       content: createThreadDto.content,
       user,
     });
-
-    await this.threadRepository.save(thread);
   }
 
   async findOne(id: number) {
@@ -43,12 +38,12 @@ export class ThreadsService {
   async findAll(page?: number, limit?: number, search?: string) {
     const totalThreadsCount = await this.threadRepository.count();
 
-    const threads = await this.threadRepository.find({
-      where: { title: Like(`%${search || ''}%`) },
-      take: limit || this.MAX_LIMIT,
-      skip: (page ?? 1 - 1) * this.MAX_LIMIT || 0,
-      order: { createdAt: 'DESC' },
-    });
+    const threads = await this.threadRepository.findForPagination(
+      page || 0,
+      limit || this.MAX_LIMIT,
+      search ? search : '',
+      'DESC',
+    );
 
     const totalPage = Math.ceil(totalThreadsCount / (limit || this.MAX_LIMIT));
 
@@ -85,9 +80,7 @@ export class ThreadsService {
   }
 
   private async getById(threadId: number) {
-    const thread = await this.threadRepository.findOne({
-      where: { id: threadId },
-    });
+    const thread = await this.threadRepository.findOneById(threadId);
 
     if (!thread) {
       throw new NotFoundException('Thread not found');
