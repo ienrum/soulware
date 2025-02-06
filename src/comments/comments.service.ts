@@ -3,28 +3,22 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Comment } from 'src/comments/entities/comment.entity';
-import { Repository } from 'typeorm';
 import { CreateCommentDto } from './dtos/create-comment.dto';
 import { UsersService } from 'src/users/users.service';
 import { UpdateCommentDto } from 'src/comments/dtos/update-comment.dto';
 import { ThreadsService } from '../threads/threads.service';
+import { CommentsRepository } from 'src/comments/repositories/comments.repository';
 
 @Injectable()
 export class CommentsService {
   constructor(
-    @InjectRepository(Comment)
-    private readonly commentsRepository: Repository<Comment>,
+    private readonly commentsRepository: CommentsRepository,
     private readonly threadsService: ThreadsService,
     private readonly usersService: UsersService,
   ) {}
 
   async findAllForThread(threadId: number) {
-    return await this.commentsRepository.find({
-      where: { thread: { id: threadId } },
-      order: { createdAt: 'DESC' },
-    });
+    return await this.commentsRepository.findByThreadId(threadId, 'DESC');
   }
 
   async findOne(commentId: number) {
@@ -39,16 +33,13 @@ export class CommentsService {
     const user = await this.usersService.findOneById(userId);
     const thread = await this.threadsService.findOne(threadId);
 
-    const comment = this.commentsRepository.create({
-      content: createCommentDto.content,
+    const comment = await this.commentsRepository.create(
+      createCommentDto,
       user,
-    });
+      thread,
+    );
 
-    comment.thread = Promise.resolve(thread);
-
-    const result = await this.commentsRepository.save(comment);
-
-    if (!result) {
+    if (!comment) {
       throw new InternalServerErrorException('Failed to create comment');
     }
   }
@@ -89,9 +80,7 @@ export class CommentsService {
   }
 
   private async findCommentById(commentId: number) {
-    const comment = await this.commentsRepository.findOne({
-      where: { id: commentId },
-    });
+    const comment = await this.commentsRepository.findOneById(commentId);
 
     if (!comment) {
       throw new NotFoundException(`Comment with id ${commentId} not found`);

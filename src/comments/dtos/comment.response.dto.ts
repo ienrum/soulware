@@ -19,6 +19,7 @@ export class CommentResponseDto {
   isAuthor: boolean;
   constructor(comment: Comment, myId?: number) {
     this.isAuthor = comment.isAuthorBy(myId);
+    this.createdAt = comment['createdAt'];
     Object.assign(this, comment);
   }
 
