@@ -1,5 +1,5 @@
-name: "이슈 생성"
-description: "이슈 생성 폼"
+name: "issue"
+description: "issue form"
 # title 필드에 기본 제목을 지정 (빈 문자열이 아님)
 title: "[이슈] 제목을 입력해주세요"
 labels: []
