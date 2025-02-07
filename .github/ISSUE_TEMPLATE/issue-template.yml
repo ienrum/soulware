@@ -1,18 +1,17 @@
-name: "이슈 생성"
-description: "이슈 생성 폼"
+name: "issue"
+description: "issue form"
 # title 필드에 기본 제목을 지정 (빈 문자열이 아님)
 title: "[이슈] 제목을 입력해주세요"
 labels: []
 assignees:
   - ienrum
 body:
-  - type: markdown
+  - type: textarea
+    id: issue_content
     attributes:
-      value: |
-        ## 어떤 기능인가요?
-        > 추가하려는 기능에 대해 간결하게 설명해주세요
+      label: "이슈 내용"
+      description: "추가하려는 기능에 대해 간결하게 설명해주세요"
 
-  # 사용자 입력을 받을 수 있는 non-markdown 필드 추가
   - type: input
     id: issue_summary
     attributes:
