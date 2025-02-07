@@ -22,6 +22,8 @@ import { FileService } from 'src/file/file.service';
 import { v4 } from 'uuid';
 import { ThreadsService } from '../threads/threads.service';
 import { FileDeleteDto } from './dtos/file-delete.dto';
+import { Role, Roles } from 'src/auth/decorators/Roles.decorator';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('file')
@@ -31,7 +33,8 @@ export class FileController {
     private readonly threadsService: ThreadsService,
   ) {}
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.Buyer, Role.Admin)
   @Post('upload/:threadId')
   @UseInterceptors(
     FilesInterceptor('files', 10, {
@@ -85,7 +88,7 @@ export class FileController {
     return response.download(file.path, file.name);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @Post(':threadId/delete')
   async deleteFiles(
     @Param('threadId', ParseIntPipe) threadId: number,
