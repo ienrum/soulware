@@ -1,9 +1,10 @@
 import { Thread } from 'src/threads/entities/thread.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
 
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 import { File } from '../../file/entities/file.entity';
 import { BaseEntity } from '../../common/entities/base.entity';
+import { Role } from 'src/auth/entities/role.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -21,4 +22,8 @@ export class User extends BaseEntity {
 
   @OneToMany(() => File, (file) => file.thread, { lazy: true })
   files: Promise<File[]>;
+
+  @ManyToMany(() => Role, (role) => role.users)
+  @JoinTable()
+  roles: Role[];
 }

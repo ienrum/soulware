@@ -14,6 +14,8 @@ import { Comment } from 'src/comments/entities/comment.entity';
 import { FileModule } from './file/file.module';
 import { File } from 'src/file/entities/file.entity';
 import { FileApiService } from './file-api/file-api.service';
+import { Role } from 'src/auth/entities/role.entity';
+import { Permission } from 'src/auth/entities/permission.entity';
 
 @Module({
   imports: [
@@ -30,7 +32,7 @@ import { FileApiService } from './file-api/file-api.service';
       database: process.env.DB_DATABASE,
       synchronize: true,
       logging: true,
-      entities: [Thread, User, Comment, File],
+      entities: [Thread, User, Comment, File, Role, Permission],
     }),
     ThreadsModule,
     UsersModule,

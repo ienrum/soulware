@@ -34,12 +34,15 @@ export class AuthService {
   async signIn(userSignInDto: UserSignInDto) {
     const { name, password } = userSignInDto;
 
-    const user = await this.usersService.findOneByName(name);
-    if (!user) {
+    const userInfo = await this.usersService.findOneByName(name);
+    if (!userInfo) {
       throw new NotFoundException('User not found');
     }
 
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    const isPasswordCorrect = await bcrypt.compare(
+      password,
+      userInfo.user.password,
+    );
     if (!isPasswordCorrect) {
       throw new ForbiddenException('Invalid credentials');
     }
@@ -50,6 +53,8 @@ export class AuthService {
       throw new Error('No secret found');
     }
 
-    return jwt.sign({ id: user.id }, secret, { expiresIn: '365d' });
+    return jwt.sign({ id: userInfo.user.id, roles: userInfo.roles }, secret, {
+      expiresIn: '365d',
+    });
   }
 }
