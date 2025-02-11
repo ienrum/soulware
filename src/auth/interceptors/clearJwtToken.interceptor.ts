@@ -4,8 +4,9 @@ import {
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { map, Observable } from 'rxjs';
+import { ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME } from 'src/common/constants';
 
 @Injectable()
 export class ClearJwtTokenInterceptor implements NestInterceptor {
@@ -13,13 +14,11 @@ export class ClearJwtTokenInterceptor implements NestInterceptor {
     context: ExecutionContext,
     next: CallHandler<any>,
   ): Observable<any> | Promise<Observable<any>> {
-    const request = context.switchToHttp().getRequest<Request>();
     const response = context.switchToHttp().getResponse<Response>();
     return next.handle().pipe(
       map((data) => {
-        if (request.cookies?.token) {
-          response.clearCookie('token');
-        }
+        response.clearCookie(ACCESS_TOKEN_NAME);
+        response.clearCookie(REFRESH_TOKEN_NAME);
 
         return data;
       }),

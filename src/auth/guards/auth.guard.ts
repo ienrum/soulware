@@ -1,5 +1,6 @@
 import { CanActivate, Injectable, UnauthorizedException } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
+import { ACCESS_TOKEN_NAME } from 'src/common/constants';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -8,7 +9,7 @@ export class AuthGuard implements CanActivate {
     const token = this.extracFromCookie(request);
 
     if (!token) {
-      throw new UnauthorizedException('Please login to continue');
+      throw new UnauthorizedException('Empty access token');
     }
 
     try {
@@ -19,13 +20,13 @@ export class AuthGuard implements CanActivate {
 
       request.user = payload;
     } catch (error) {
-      throw new UnauthorizedException('Please login to continue');
+      throw new UnauthorizedException('Invalid access token');
     }
 
     return true;
   }
 
   private extracFromCookie(request: any) {
-    return request.cookies?.token;
+    return request.cookies?.[ACCESS_TOKEN_NAME];
   }
 }

@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { map } from 'rxjs';
+import { ACCESS_TOKEN_NAME } from 'src/common/constants';
 
 @Injectable()
 export class CheckAuthorizedInterceptor implements NestInterceptor {
@@ -20,6 +21,6 @@ export class CheckAuthorizedInterceptor implements NestInterceptor {
     );
   }
   private extracFromCookie(request: any) {
-    return request.cookies?.token;
+    return request.cookies?.[ACCESS_TOKEN_NAME];
   }
 }
